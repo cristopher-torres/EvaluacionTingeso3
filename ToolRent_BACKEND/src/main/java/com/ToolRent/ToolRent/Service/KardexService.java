@@ -27,4 +27,8 @@ public class KardexService {
     public List<KardexEntity> getMovementsByDateRange(LocalDateTime start, LocalDateTime end) {
         return kardexRepository.findByDateTimeBetween(start, end);
     }
+
+    public List<KardexEntity> getAll() {
+        return kardexRepository.findAllByOrderByDateTimeDesc();
+    }
 }

@@ -6,6 +6,7 @@ import com.ToolRent.ToolRent.Service.KardexService;
 import com.ToolRent.ToolRent.Service.ToolsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,19 @@ public class KardexController {
     public List<KardexEntity> getMovementsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+        if (start == null && end == null) {
+            return kardexService.getAll();
+        }
+
         return kardexService.getMovementsByDateRange(start, end);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<KardexEntity>> getAllMovements() {
+        List<KardexEntity> movements = kardexService.getAll();
+        if (movements.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(movements);
     }
 }

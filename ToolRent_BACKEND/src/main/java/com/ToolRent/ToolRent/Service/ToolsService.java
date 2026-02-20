@@ -56,16 +56,15 @@ public class ToolsService {
             if (i == 0) {
                 firstSaved = savedTool;
             }
-
-            // Guardar en Kardex
-            KardexEntity movement = new KardexEntity();
-            movement.setType("INGRESO");
-            movement.setQuantity(1);
-            movement.setTool(savedTool);
-            movement.setDateTime(LocalDateTime.now());
-            movement.setUserRut(rut);
-            kardexService.save(movement);
         }
+
+        KardexEntity movement = new KardexEntity();
+        movement.setType("INGRESO");
+        movement.setQuantity(quantity);
+        movement.setTool(firstSaved);
+        movement.setDateTime(LocalDateTime.now());
+        movement.setUserRut(rut);
+        kardexService.save(movement);
 
         return firstSaved;  // devolvemos solo una unidad válida
     }

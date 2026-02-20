@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useKeycloak } from "@react-keycloak/web";
 import loanService from "../services/loan.service";
@@ -7,186 +7,223 @@ import userService from "../services/user.service";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import FormControl from "@mui/material/FormControl";
-import MenuItem from "@mui/material/MenuItem";
+import Autocomplete from "@mui/material/Autocomplete";
 import Typography from "@mui/material/Typography";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import SaveIcon from "@mui/icons-material/Save";
-
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 
 const AddLoan = () => {
   const { keycloak } = useKeycloak();
   const navigate = useNavigate();
 
-  const userId = keycloak?.tokenParsed?.sub; 
-
   const [tools, setTools] = useState([]);
   const [clients, setClients] = useState([]);
-  const [selectedToolId, setSelectedToolId] = useState("");
-  const [selectedClient, setSelectedClient] = useState("");
+  const [selectedTool, setSelectedTool] = useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
   const [startDate, setStartDate] = useState("");
   const [scheduledReturnDate, setScheduledReturnDate] = useState("");
 
-  const [successMessage, setSuccessMessage] = useState("");
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
+  
+  const [openReceiptDialog, setOpenReceiptDialog] = useState(false);
+  const [loanReceipt, setLoanReceipt] = useState(null);
 
-  // Cargar herramientas y clientes
+  const clientRef = useRef(null);
+  const startDateRef = useRef(null);
+  const endDateRef = useRef(null);
+
+  const now = new Date();
+  const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    .toISOString()
+    .split("T")[0];
+
+  const getMinReturnDate = () => {
+    if (!startDate) return today;
+    const date = new Date(startDate + "T12:00:00");
+    date.setDate(date.getDate() + 1);
+    return date.toISOString().split("T")[0];
+  };
+
   useEffect(() => {
-    toolService
-      .getAvailable()
-      .then((res) => setTools(res.data))
-      .catch((err) => console.error("Error cargando herramientas", err));
-
-    userService
-      .getAllClients()
-      .then((res) => setClients(res.data))
-      .catch((err) => console.error("Error cargando clientes", err));
+    setLoading(true);
+    setLoadingMessage("Cargando catálogo y clientes...");
+    Promise.all([
+      toolService.getAvailable(),
+      userService.getAllClients()
+    ])
+      .then(([toolsRes, usersRes]) => {
+        setTools(toolsRes.data);
+        setClients(usersRes.data.filter(u => u.status.toUpperCase() === "ACTIVO"));
+      })
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  // Obtener herramientas únicas por nombre
   const uniqueTools = tools.reduce((acc, tool) => {
-    if (!acc.find((t) => t.name === tool.name)) {
-      acc.push(tool);
-    }
+    if (!acc.find((t) => t.name === tool.name)) acc.push(tool);
     return acc;
   }, []);
 
   const saveLoan = (e) => {
     e.preventDefault();
-
-    const rut = keycloak?.tokenParsed?.rut; 
+    setLoading(true);
+    setLoadingMessage("Procesando préstamo...");
+    const rut = keycloak?.tokenParsed?.rut;
 
     const loanData = {
-      tool: { id: selectedToolId },
-      client: { id: selectedClient },
-      startDate: startDate,              
-      scheduledReturnDate: scheduledReturnDate, 
-      createdLoan: new Date().toISOString(), 
+      tool: { id: selectedTool?.id },
+      client: { id: selectedClient?.id },
+      startDate,
+      scheduledReturnDate,
+      createdLoan: new Date().toISOString(),
       createdBy: { rut: rut },
     };
 
-    loanService
-      .createLoan(loanData, rut)
-      .then(() => {
-        setSuccessMessage("Préstamo creado exitosamente ✅");
-        setOpenSnackbar(true);
-        setTimeout(() => navigate("/"), 2500);
+    loanService.createLoan(loanData, rut)
+      .then((res) => {
+        setLoanReceipt(res.data);
+        setOpenReceiptDialog(true);
       })
       .catch((err) => {
-        console.error("Error al crear préstamo ❌", err);
-        alert("Error al crear préstamo: " + err.response?.data || err.message);
-      });
+        const msg = err.response?.data;
+        setErrorMessage(typeof msg === 'string' ? msg : (msg?.message || "Error al procesar"));
+        setOpenErrorSnackbar(true);
+      })
+      .finally(() => setLoading(false));
+  };
+
+  const handleCloseReceipt = () => {
+    setOpenReceiptDialog(false);
+    navigate("/");
+  };
+
+  const inputSx = {
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
+      "&:hover fieldset": { borderColor: "#00d2ff" },
+      "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
+    },
+    "& .MuiInputLabel-root": { color: "#b392f0" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
+    "& .MuiSvgIcon-root": { color: "#00d2ff" },
+    "& input[type='date']::-webkit-calendar-picker-indicator": {
+      position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer'
+    }
+  };
+
+  const cyanButtonStyle = {
+    mt: 2, 
+    bgcolor: "rgba(0, 210, 255, 0.1)", 
+    border: "1px solid #00d2ff", 
+    color: "#00d2ff", 
+    fontWeight: "bold", 
+    py: 1.5, 
+    textTransform: "none", 
+    outline: "none",
+    "&:hover": { bgcolor: "#00d2ff", color: "#100524", boxShadow: "0 0 20px rgba(0, 210, 255, 0.6)" },
+    "&:focus": { outline: "none" },
+    "&:focusVisible": { outline: "none" }
   };
 
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
-      sx={{ backgroundColor: "#f5f5f5" }}
-    >
-      <Box
-        component="form"
-        onSubmit={saveLoan}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          width: "400px",
-          padding: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          backgroundColor: "white",
-        }}
-      >
-        <Typography variant="h6" align="center" gutterBottom>
-          Registrar Préstamo
-        </Typography>
+    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ bgcolor: "#100524", p: 2 }}>
+      <Backdrop sx={{ color: '#00d2ff', zIndex: 10, bgcolor: 'rgba(16, 5, 36, 0.8)', display: 'flex', flexDirection: 'column', gap: 2 }} open={loading}>
+        <CircularProgress color="inherit" />
+        <Typography variant="h6" sx={{ textShadow: "0 0 10px rgba(0, 210, 255, 0.5)" }}>{loadingMessage}</Typography>
+      </Backdrop>
 
-        {/* Select de Herramienta con nombres únicos */}
-        <FormControl fullWidth>
-          <TextField
-            select
-            label="Herramienta"
-            value={selectedToolId}
-            onChange={(e) => setSelectedToolId(e.target.value)}
-            required
-          >
-            {uniqueTools.map((tool) => (
-              <MenuItem key={tool.id} value={tool.id}>
-                {tool.name}
-              </MenuItem>
-            ))}
-          </TextField>
-        </FormControl>
+      <Box component="form" onSubmit={saveLoan} sx={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", maxWidth: "450px", p: 4, borderRadius: 3, bgcolor: "#1d0b3b", border: "1px solid rgba(232, 28, 255, 0.4)", boxShadow: "0 8px 32px rgba(232, 28, 255, 0.2)" }}>
+        <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold" }}>Registrar Préstamo</Typography>
 
-        {/* Select de Cliente */}
-        <FormControl fullWidth>
-          <TextField
-            select
-            label="Cliente"
-            value={selectedClient}
-            onChange={(e) => setSelectedClient(e.target.value)}
-            required
-          >
-            {clients.map((client) => (
-              <MenuItem key={client.id} value={client.id}>
-                {client.username}
-              </MenuItem>
-            ))}
-          </TextField>
-        </FormControl>
+        <Autocomplete
+          options={uniqueTools}
+          getOptionLabel={(o) => o.name || ""}
+          value={selectedTool}
+          onChange={(e, v) => {
+            setSelectedTool(v);
+            if (v) setTimeout(() => clientRef.current?.focus(), 100);
+          }}
+          renderInput={(p) => <TextField {...p} label="Buscar Herramienta" required sx={inputSx} />}
+          slotProps={{ paper: { sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff" } } }}
+        />
 
-        {/* Fecha de inicio */}
-        <FormControl fullWidth>
+        <Autocomplete
+          options={clients}
+          getOptionLabel={(o) => o.username || ""}
+          value={selectedClient}
+          onChange={(e, v) => {
+            setSelectedClient(v);
+            if (v) setTimeout(() => startDateRef.current?.showPicker(), 100);
+          }}
+          renderInput={(p) => <TextField {...p} label="Buscar Cliente" inputRef={clientRef} required sx={inputSx} />}
+          slotProps={{ paper: { sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff" } } }}
+        />
+
+        <Box sx={{ display: 'flex', gap: 2 }}>
           <TextField
-            label="Fecha de inicio"
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            required
+            fullWidth label="Fecha Inicio" type="date" inputRef={startDateRef}
+            inputProps={{ min: today }} value={startDate}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+              if (scheduledReturnDate && scheduledReturnDate <= e.target.value) setScheduledReturnDate("");
+              setTimeout(() => endDateRef.current?.showPicker(), 100);
+            }}
+            InputLabelProps={{ shrink: true }} required sx={inputSx}
+            onClick={(e) => e.target.showPicker()}
           />
-        </FormControl>
-
-        {/* Fecha de devolución */}
-        <FormControl fullWidth>
           <TextField
-            label="Fecha de devolución"
-            type="date"
-            value={scheduledReturnDate}
+            fullWidth label="Fecha Devolución" type="date" inputRef={endDateRef}
+            inputProps={{ min: getMinReturnDate() }} value={scheduledReturnDate}
             onChange={(e) => setScheduledReturnDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            required
+            InputLabelProps={{ shrink: true }} required sx={inputSx}
+            onClick={(e) => e.target.showPicker()}
           />
-        </FormControl>
+        </Box>
 
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{ backgroundColor: "#1b5e20", "&:hover": { backgroundColor: "#2e7d32" } }}
-          startIcon={<SaveIcon />}
-        >
-          Guardar
+        <Button type="submit" variant="contained" sx={cyanButtonStyle} startIcon={<SaveIcon />}>
+          Confirmar Préstamo
         </Button>
       </Box>
 
-      {/* Snackbar de éxito */}
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={2000}
-        onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      {/* Dialog de boleta de Préstamo */}
+      <Dialog 
+        open={openReceiptDialog} 
+        onClose={handleCloseReceipt}
+        PaperProps={{ sx: { bgcolor: '#1d0b3b', border: '2px solid #00d2ff', color: 'white', p: 2 } }}
       >
-        <Alert
-          onClose={() => setOpenSnackbar(false)}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          {successMessage}
-        </Alert>
+        <DialogTitle sx={{ color: '#00d2ff', textAlign: 'center', fontWeight: 'bold' }}>Comprobante de Préstamo</DialogTitle>
+        <DialogContent>
+          {loanReceipt && (
+            <Box sx={{ minWidth: "300px", '& p': { mb: 1, borderBottom: '1px solid rgba(255,255,255,0.1)', pb: 0.5 } }}>
+              <p><strong>ID Préstamo:</strong> {loanReceipt.id}</p>
+              <p><strong>Cliente:</strong> {loanReceipt.client?.username || selectedClient?.username}</p>
+              <p><strong>Herramienta:</strong> {loanReceipt.tool?.name || selectedTool?.name}</p>
+              <p><strong>Fecha Inicio:</strong> {loanReceipt.startDate}</p>
+              <p><strong>Fecha Devolución:</strong> {loanReceipt.scheduledReturnDate}</p>
+              <p><strong>Precio del préstamo:</strong> <span style={{ color: '#00d2ff' }}>${loanReceipt.loanPrice || '0'}</span></p>
+              
+              <Box display="flex" justifyContent="center" mt={3}>
+                <Button variant="contained" sx={{ ...cyanButtonStyle, mt: 0 }} onClick={handleCloseReceipt}>
+                  Aceptar y Volver al Inicio
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={() => setOpenErrorSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+        <Alert severity="error" variant="filled" sx={{ bgcolor: "#f44336", color: "white", fontWeight: "bold" }}>{errorMessage}</Alert>
       </Snackbar>
     </Box>
   );

@@ -17,16 +17,28 @@ public class UserService {
     private UserRepository userRepository;
 
     public UserEntity save(UserEntity user) {
-        // Verificar si el RUT ya está registrado
-        Optional<UserEntity> existingUser = userRepository.findByRut(user.getRut());
-        if (existingUser.isPresent()) {
+        // 1. Validar RUT único
+        if (userRepository.findByRut(user.getRut()).isPresent()) {
             throw new RuntimeException("El RUT ya está registrado.");
         }
 
-        // Si no existe un RUT duplicado, guardamos el usuario
+        // 2. Validar Username único
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("El nombre de usuario '" + user.getUsername() + "' ya está en uso.");
+        }
+
+        // 3. Validar Email único
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new RuntimeException("El correo electrónico ya está registrado.");
+        }
+
+        // 4. Validar Teléfono único
+        if (userRepository.findByPhoneNumber(user.getPhoneNumber()).isPresent()) {
+            throw new RuntimeException("El número de teléfono ya está registrado.");
+        }
+
         return userRepository.save(user);
     }
-
 
     // Obtener todos los usuarios
     public List<UserEntity> findAll() {

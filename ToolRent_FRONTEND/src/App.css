@@ -57,3 +57,11 @@ html {
 .read-the-docs {
   color: #888;
 }
+
+/* Eliminar el contorno blanco en todos los botones */
+button:focus,
+button:focus-visible,
+.MuiButtonBase-root:focus,
+.MuiButtonBase-root:focus-visible {
+    outline: none !important;
+}

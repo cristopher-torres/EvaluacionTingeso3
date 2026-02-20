@@ -20,7 +20,7 @@ const AddEditTool = () => {
   const [dailyRate, setDailyRate] = useState("");
   const [dailyLateRate, setDailyLateRate] = useState("");
   const [repairValue, setRepairValue] = useState("");
-  const [status, setStatus] = useState("DISPONIBLE"); // Valor por defecto
+  const [status, setStatus] = useState("DISPONIBLE");
 
   const { id } = useParams();
   const [titleToolForm, setTitleToolForm] = useState("");
@@ -32,7 +32,6 @@ const AddEditTool = () => {
 
   const saveTool = (e) => {
     e.preventDefault();
-
     const rut = keycloak?.tokenParsed?.rut;
 
     const tool = {
@@ -47,8 +46,7 @@ const AddEditTool = () => {
     };
 
     if (id) {
-      toolService
-        .update(tool, rut)
+      toolService.update(tool, rut)
         .then(() => {
           setSuccessMessage("Herramienta actualizada exitosamente ✅");
           setOpenSnackbar(true);
@@ -56,8 +54,7 @@ const AddEditTool = () => {
         })
         .catch((error) => console.error("Error al actualizar herramienta ❌", error));
     } else {
-      toolService
-        .create(tool, Number(quantity), rut)
+      toolService.create(tool, Number(quantity), rut)
         .then(() => {
           setSuccessMessage("Herramienta creada exitosamente ✅");
           setOpenSnackbar(true);
@@ -70,8 +67,7 @@ const AddEditTool = () => {
   useEffect(() => {
     if (id) {
       setTitleToolForm("Editar Herramienta");
-      toolService
-        .get(id)
+      toolService.get(id)
         .then((response) => {
           const tool = response.data;
           setName(tool.name);
@@ -89,13 +85,27 @@ const AddEditTool = () => {
     }
   }, [id]);
 
+  // Estilo común para los inputs neón
+  const inputSx = {
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
+      "&:hover fieldset": { borderColor: "#00d2ff" },
+      "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
+    },
+    "& .MuiInputLabel-root": { color: "#b392f0" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
+    "& .MuiSvgIcon-root": { color: "#00d2ff" },
+    "& .MuiSelect-select": { color: "white" }
+  };
+
   return (
     <Box
       display="flex"
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      sx={{ backgroundColor: "#f5f5f5" }}
+      sx={{ backgroundColor: "#100524", p: 2 }} // Fondo morado profundo
     >
       <Box
         component="form"
@@ -103,38 +113,52 @@ const AddEditTool = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: 2,
-          width: "400px",
+          gap: 2.5,
+          width: "100%",
+          maxWidth: "500px",
           padding: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          backgroundColor: "white",
+          borderRadius: 3,
+          boxShadow: "0 8px 32px rgba(232, 28, 255, 0.2)",
+          backgroundColor: "#1d0b3b", // Morado de tarjeta
+          border: "1px solid rgba(232, 28, 255, 0.4)",
         }}
       >
-        <Typography variant="h6" align="center" gutterBottom>
+        <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold", mb: 1 }}>
           {titleToolForm}
         </Typography>
 
         <FormControl fullWidth>
           <TextField
-            id="name"
-            label="Nombre"
+            label="Nombre de Herramienta"
             value={name}
             variant="outlined"
             onChange={(e) => setName(e.target.value)}
             required
+            sx={inputSx}
           />
         </FormControl>
 
         <FormControl fullWidth>
           <TextField
-            id="category"
             label="Categoría"
             value={category}
             select
             variant="outlined"
             onChange={(e) => setCategory(e.target.value)}
             required
+            sx={inputSx}
+            SelectProps={{ 
+                MenuProps: { 
+                    PaperProps: { 
+                        sx: { 
+                            bgcolor: "#1d0b3b", 
+                            color: "white",
+                            border: "1px solid #00d2ff",
+                            "& .MuiMenuItem-root:hover": { bgcolor: "rgba(0, 210, 255, 0.1)" }
+                        } 
+                    } 
+                } 
+            }}
           >
             <MenuItem value="Herramientas Eléctricas">Herramientas Eléctricas</MenuItem>
             <MenuItem value="Herramientas Manuales">Herramientas Manuales</MenuItem>
@@ -147,72 +171,77 @@ const AddEditTool = () => {
         {!id && (
           <FormControl fullWidth>
             <TextField
-              id="quantity"
-              label="Cantidad a crear"
+              label="Cantidad inicial"
               type="number"
               value={quantity}
               variant="outlined"
               onChange={(e) => setQuantity(e.target.value)}
               required
+              sx={inputSx}
             />
           </FormControl>
         )}
 
-        <FormControl fullWidth>
-          <TextField
-            id="replacementValue"
-            label="Valor de Reposición"
-            type="number"
-            value={replacementValue}
-            variant="outlined"
-            onChange={(e) => setReplacementValue(e.target.value)}
-            required
-          />
-        </FormControl>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+                fullWidth
+                label="Valor Reposición"
+                type="number"
+                value={replacementValue}
+                onChange={(e) => setReplacementValue(e.target.value)}
+                required
+                sx={inputSx}
+            />
+            <TextField
+                fullWidth
+                label="Tarifa Diaria"
+                type="number"
+                value={dailyRate}
+                onChange={(e) => setDailyRate(e.target.value)}
+                sx={inputSx}
+            />
+        </Box>
 
-        <FormControl fullWidth>
-          <TextField
-            id="dailyRate"
-            label="Tarifa Diaria"
-            type="number"
-            value={dailyRate}
-            variant="outlined"
-            onChange={(e) => setDailyRate(e.target.value)}
-          />
-        </FormControl>
-
-        <FormControl fullWidth>
-          <TextField
-            id="dailyLateRate"
-            label="Tarifa por Atraso"
-            type="number"
-            value={dailyLateRate}
-            variant="outlined"
-            onChange={(e) => setDailyLateRate(e.target.value)}
-          />
-        </FormControl>
-
-        <FormControl fullWidth>
-          <TextField
-            id="repairValue"
-            label="Costo de Reparación"
-            type="number"
-            value={repairValue}
-            variant="outlined"
-            onChange={(e) => setRepairValue(e.target.value)}
-          />
-        </FormControl>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+                fullWidth
+                label="Tarifa Atraso"
+                type="number"
+                value={dailyLateRate}
+                onChange={(e) => setDailyLateRate(e.target.value)}
+                sx={inputSx}
+            />
+            <TextField
+                fullWidth
+                label="Costo Reparación"
+                type="number"
+                value={repairValue}
+                onChange={(e) => setRepairValue(e.target.value)}
+                sx={inputSx}
+            />
+        </Box>
 
         {id && (
           <FormControl fullWidth>
             <TextField
-              id="status"
               label="Estado"
               value={status}
               select
               variant="outlined"
               onChange={(e) => setStatus(e.target.value)}
               required
+              sx={inputSx}
+              SelectProps={{ 
+                  MenuProps: { 
+                      PaperProps: { 
+                          sx: { 
+                              bgcolor: "#1d0b3b", 
+                              color: "white",
+                              border: "1px solid #00d2ff"
+                          } 
+                      } 
+                  } 
+              }}
             >
               <MenuItem value="DISPONIBLE">DISPONIBLE</MenuItem>
               <MenuItem value="PRESTADA">PRESTADA</MenuItem>
@@ -226,30 +255,49 @@ const AddEditTool = () => {
           type="submit"
           variant="contained"
           sx={{
-            backgroundColor: "#1b5e20",
-            "&:hover": { backgroundColor: "#2e7d32" },
+            mt: 2,
+            backgroundColor: "rgba(0, 210, 255, 0.1)",
+            border: "1px solid #00d2ff",
+            color: "#00d2ff",
+            fontWeight: "bold",
+            py: 1.5,
+            textTransform: "none",
+            fontSize: "1rem",
+            "&:hover": { 
+                backgroundColor: "#00d2ff", 
+                color: "#100524",
+                boxShadow: "0 0 20px rgba(0, 210, 255, 0.6)" 
+            },
           }}
           startIcon={<SaveIcon />}
         >
-          Guardar
+          Guardar Cambios
         </Button>
 
-        <Typography variant="body2" align="center">
-          <Link to="/inventario">Volver al Listado</Link>
+        <Typography variant="body2" align="center" sx={{ mt: 1 }}>
+          <Link to="/inventario" style={{ color: "#b392f0", textDecoration: "none", fontWeight: "bold" }}>
+            ← Volver al Inventario
+          </Link>
         </Typography>
       </Box>
 
-      {/* Snackbar de éxito */}
       <Snackbar
         open={openSnackbar}
-        autoHideDuration={2000}
+        autoHideDuration={2500}
         onClose={() => setOpenSnackbar(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert
           onClose={() => setOpenSnackbar(false)}
           severity="success"
-          sx={{ width: "100%" }}
+          variant="filled"
+          sx={{ 
+              width: "100%", 
+              bgcolor: "#00d2ff", 
+              color: "#100524", 
+              fontWeight: "bold",
+              boxShadow: "0 0 15px rgba(0, 210, 255, 0.5)"
+          }}
         >
           {successMessage}
         </Alert>

@@ -14,4 +14,5 @@ public interface KardexRepository extends JpaRepository<KardexEntity, Long> {
 
     List<KardexEntity> findByTool(ToolsEntity tool);
     List<KardexEntity> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
+    List<KardexEntity> findAllByOrderByDateTimeDesc();
 }
