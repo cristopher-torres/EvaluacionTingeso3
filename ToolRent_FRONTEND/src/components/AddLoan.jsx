@@ -18,6 +18,12 @@ import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+
 const AddLoan = () => {
   const { keycloak } = useKeycloak();
   const navigate = useNavigate();
@@ -26,8 +32,11 @@ const AddLoan = () => {
   const [clients, setClients] = useState([]);
   const [selectedTool, setSelectedTool] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
-  const [startDate, setStartDate] = useState("");
-  const [scheduledReturnDate, setScheduledReturnDate] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [scheduledReturnDate, setScheduledReturnDate] = useState(null);
+
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -38,19 +47,13 @@ const AddLoan = () => {
   const [loanReceipt, setLoanReceipt] = useState(null);
 
   const clientRef = useRef(null);
-  const startDateRef = useRef(null);
-  const endDateRef = useRef(null);
+  const submitBtnRef = useRef(null);
 
-  const now = new Date();
-  const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-    .toISOString()
-    .split("T")[0];
+  const today = dayjs();
 
   const getMinReturnDate = () => {
     if (!startDate) return today;
-    const date = new Date(startDate + "T12:00:00");
-    date.setDate(date.getDate() + 1);
-    return date.toISOString().split("T")[0];
+    return startDate.add(1, 'day');
   };
 
   useEffect(() => {
@@ -75,6 +78,12 @@ const AddLoan = () => {
 
   const saveLoan = (e) => {
     e.preventDefault();
+    if (!startDate || !scheduledReturnDate) {
+        setErrorMessage("Debe seleccionar las fechas del préstamo");
+        setOpenErrorSnackbar(true);
+        return;
+    }
+
     setLoading(true);
     setLoadingMessage("Procesando préstamo...");
     const rut = keycloak?.tokenParsed?.rut;
@@ -82,8 +91,8 @@ const AddLoan = () => {
     const loanData = {
       tool: { id: selectedTool?.id },
       client: { id: selectedClient?.id },
-      startDate,
-      scheduledReturnDate,
+      startDate: startDate.format('YYYY-MM-DD'),
+      scheduledReturnDate: scheduledReturnDate.format('YYYY-MM-DD'),
       createdLoan: new Date().toISOString(),
       createdBy: { rut: rut },
     };
@@ -109,15 +118,78 @@ const AddLoan = () => {
   const inputSx = {
     "& .MuiOutlinedInput-root": {
       color: "white",
+      fontSize: "1rem", 
       "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
       "&:hover fieldset": { borderColor: "#00d2ff" },
       "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
     },
-    "& .MuiInputLabel-root": { color: "#b392f0" },
+    "& .MuiInputLabel-root": { color: "#b392f0", fontSize: "1rem" }, 
     "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
-    "& .MuiSvgIcon-root": { color: "#00d2ff" },
-    "& input[type='date']::-webkit-calendar-picker-indicator": {
-      position: 'absolute', left: 0, top: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer'
+    "& .MuiSvgIcon-root": { color: "#00d2ff" }
+  };
+
+  const dateInputSx = {
+    "& .MuiOutlinedInput-root": {
+      color: "white",
+      fontSize: "1rem", 
+      "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
+      "&:hover fieldset": { borderColor: "#00d2ff" },
+      "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
+      cursor: "pointer",
+      paddingRight: "12px", 
+    },
+    "& .MuiInputBase-input": {
+      cursor: "pointer",
+      fontSize: "1rem", 
+      caretColor: "transparent",
+      userSelect: "none",
+      pointerEvents: "none", 
+      paddingRight: "0px",
+      "&::selection": { backgroundColor: "transparent" },
+    },
+    "& .MuiInputLabel-root": { 
+      color: "#b392f0", 
+      pointerEvents: "none",
+      fontSize: "1rem", 
+      maxWidth: "calc(100% - 50px)", 
+    },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
+    "& .MuiIconButton-root": { 
+      color: "#00d2ff", 
+      pointerEvents: "none",
+      padding: "0.5px", 
+      marginRight: "1px", 
+    }
+  };
+
+  const popperSx = {
+    '& .MuiPaper-root': {
+      backgroundColor: '#1d0b3b',
+      border: '1px solid #00d2ff',
+      color: 'white',
+      boxShadow: '0 4px 20px rgba(0, 210, 255, 0.3)',
+    },
+    '& .MuiPickersCalendarHeader-root': { color: '#00d2ff' },
+    '& .MuiIconButton-root': { color: '#00d2ff' },
+    '& .MuiPickersDay-root': {
+      color: 'white',
+      '&:hover': { backgroundColor: 'rgba(0, 210, 255, 0.2)' },
+      '&.Mui-selected': {
+        backgroundColor: '#00d2ff',
+        color: '#100524',
+        '&:hover': { backgroundColor: '#00a8cc' },
+      },
+      '&.MuiPickersDay-today': { border: '1px solid #e81cff' }
+    },
+    '& .MuiDayCalendar-weekDayLabel': { color: '#b392f0' },
+    '& .MuiPickersYear-yearButton': {
+       color: 'white',
+       '&.Mui-selected': { backgroundColor: '#00d2ff', color: '#100524' }
+    },
+    '& .MuiPickersMonth-monthButton': {
+       color: 'white',
+       '&.Mui-selected': { backgroundColor: '#00d2ff', color: '#100524' },
+       textTransform: 'capitalize'
     }
   };
 
@@ -127,6 +199,7 @@ const AddLoan = () => {
     border: "1px solid #00d2ff", 
     color: "#00d2ff", 
     fontWeight: "bold", 
+    fontSize: "1rem", // Unificado
     py: 1.5, 
     textTransform: "none", 
     outline: "none",
@@ -136,100 +209,156 @@ const AddLoan = () => {
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ bgcolor: "#100524", p: 2 }}>
-      <Backdrop sx={{ color: '#00d2ff', zIndex: 10, bgcolor: 'rgba(16, 5, 36, 0.8)', display: 'flex', flexDirection: 'column', gap: 2 }} open={loading}>
-        <CircularProgress color="inherit" />
-        <Typography variant="h6" sx={{ textShadow: "0 0 10px rgba(0, 210, 255, 0.5)" }}>{loadingMessage}</Typography>
-      </Backdrop>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ bgcolor: "#100524", p: 2 }}>
+        <Backdrop sx={{ color: '#00d2ff', zIndex: 10, bgcolor: 'rgba(16, 5, 36, 0.8)', display: 'flex', flexDirection: 'column', gap: 2 }} open={loading}>
+          <CircularProgress color="inherit" />
+          <Typography variant="h6" sx={{ textShadow: "0 0 10px rgba(0, 210, 255, 0.5)" }}>{loadingMessage}</Typography>
+        </Backdrop>
 
-      <Box component="form" onSubmit={saveLoan} sx={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", maxWidth: "450px", p: 4, borderRadius: 3, bgcolor: "#1d0b3b", border: "1px solid rgba(232, 28, 255, 0.4)", boxShadow: "0 8px 32px rgba(232, 28, 255, 0.2)" }}>
-        <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold" }}>Registrar Préstamo</Typography>
+        <Box component="form" onSubmit={saveLoan} sx={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", maxWidth: "550px", p: 4, borderRadius: 3, bgcolor: "#1d0b3b", border: "1px solid rgba(232, 28, 255, 0.4)", boxShadow: "0 8px 32px rgba(232, 28, 255, 0.2)" }}>
+          <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold" }}>Registrar Préstamo</Typography>
 
-        <Autocomplete
-          options={uniqueTools}
-          getOptionLabel={(o) => o.name || ""}
-          value={selectedTool}
-          onChange={(e, v) => {
-            setSelectedTool(v);
-            if (v) setTimeout(() => clientRef.current?.focus(), 100);
-          }}
-          renderInput={(p) => <TextField {...p} label="Buscar Herramienta" required sx={inputSx} />}
-          slotProps={{ paper: { sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff" } } }}
-        />
-
-        <Autocomplete
-          options={clients}
-          getOptionLabel={(o) => o.username || ""}
-          value={selectedClient}
-          onChange={(e, v) => {
-            setSelectedClient(v);
-            if (v) setTimeout(() => startDateRef.current?.showPicker(), 100);
-          }}
-          renderInput={(p) => <TextField {...p} label="Buscar Cliente" inputRef={clientRef} required sx={inputSx} />}
-          slotProps={{ paper: { sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff" } } }}
-        />
-
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <TextField
-            fullWidth label="Fecha Inicio" type="date" inputRef={startDateRef}
-            inputProps={{ min: today }} value={startDate}
-            onChange={(e) => {
-              setStartDate(e.target.value);
-              if (scheduledReturnDate && scheduledReturnDate <= e.target.value) setScheduledReturnDate("");
-              setTimeout(() => endDateRef.current?.showPicker(), 100);
+          <Autocomplete
+            options={uniqueTools}
+            getOptionLabel={(o) => o.name || ""}
+            value={selectedTool}
+            onChange={(e, v) => {
+              setSelectedTool(v);
+              if (v) setTimeout(() => clientRef.current?.focus(), 100);
             }}
-            InputLabelProps={{ shrink: true }} required sx={inputSx}
-            onClick={(e) => e.target.showPicker()}
+            renderInput={(p) => <TextField {...p} label="Buscar Herramienta" required sx={inputSx} />}
+            slotProps={{ paper: { sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff" } } }}
           />
-          <TextField
-            fullWidth label="Fecha Devolución" type="date" inputRef={endDateRef}
-            inputProps={{ min: getMinReturnDate() }} value={scheduledReturnDate}
-            onChange={(e) => setScheduledReturnDate(e.target.value)}
-            InputLabelProps={{ shrink: true }} required sx={inputSx}
-            onClick={(e) => e.target.showPicker()}
+
+          <Autocomplete
+            options={clients}
+            getOptionLabel={(o) => o.username || ""}
+            value={selectedClient}
+            onChange={(e, v) => {
+              setSelectedClient(v);
+              if (v) setTimeout(() => setStartDateOpen(true), 100);
+            }}
+            renderInput={(p) => <TextField {...p} label="Buscar Cliente" inputRef={clientRef} required sx={inputSx} />}
+            slotProps={{ paper: { sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff" } } }}
           />
+
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <DatePicker
+              enableAccessibleFieldDOMStructure={false}
+              label="Fecha Inicio"
+              value={startDate}
+              minDate={today}
+              open={startDateOpen}
+              onOpen={() => setStartDateOpen(true)}
+              onClose={() => setStartDateOpen(false)}
+              onChange={(newValue) => {
+                setStartDate(newValue);
+                if (scheduledReturnDate && newValue && scheduledReturnDate.isBefore(newValue)) {
+                  setScheduledReturnDate(null);
+                }
+              }}
+              onAccept={(newValue) => {
+                setStartDate(newValue);
+                setStartDateOpen(false);
+                setEndDateOpen(true);
+              }}
+              format="DD/MM/YYYY"
+              slots={{
+                textField: (params) => (
+                  <TextField
+                    {...params}
+                    sx={dateInputSx}
+                    fullWidth
+                    required
+                    onClick={() => setStartDateOpen(true)}
+                    onKeyDown={(e) => e.preventDefault()}
+                    inputProps={{
+                      ...params.inputProps,
+                      value: startDate ? startDate.format("DD/MM/YYYY") : "",
+                      placeholder: "",
+                      readOnly: true
+                    }}
+                  />
+                )
+              }}
+              slotProps={{ popper: { sx: popperSx } }}
+            />
+
+            <DatePicker
+              enableAccessibleFieldDOMStructure={false}
+              label="Fecha Devolución"
+              value={scheduledReturnDate}
+              minDate={getMinReturnDate()}
+              open={endDateOpen}
+              onOpen={() => setEndDateOpen(true)}
+              onClose={() => setEndDateOpen(false)}
+              onChange={(newValue) => setScheduledReturnDate(newValue)}
+              onAccept={(newValue) => {
+                setScheduledReturnDate(newValue);
+                setEndDateOpen(false);
+                setTimeout(() => submitBtnRef.current?.focus(), 100);
+              }}
+              format="DD/MM/YYYY"
+              slots={{
+                textField: (params) => (
+                  <TextField
+                    {...params}
+                    sx={dateInputSx}
+                    fullWidth
+                    required
+                    onClick={() => setEndDateOpen(true)}
+                    onKeyDown={(e) => e.preventDefault()}
+                    inputProps={{
+                      ...params.inputProps,
+                      value: scheduledReturnDate ? scheduledReturnDate.format("DD/MM/YYYY") : "",
+                      placeholder: "",
+                      readOnly: true
+                    }}
+                  />
+                )
+              }}
+              slotProps={{ popper: { sx: popperSx } }}
+            />
+          </Box>
+
+          <Button ref={submitBtnRef} type="submit" variant="contained" sx={cyanButtonStyle} startIcon={<SaveIcon />}>
+            Confirmar Préstamo
+          </Button>
         </Box>
 
-        <Button type="submit" variant="contained" sx={cyanButtonStyle} startIcon={<SaveIcon />}>
-          Confirmar Préstamo
-        </Button>
-      </Box>
-
-      {/* Dialog de boleta de Préstamo */}
-      <Dialog 
-        open={openReceiptDialog} 
-        onClose={handleCloseReceipt}
-        PaperProps={{ sx: { bgcolor: '#1d0b3b', border: '2px solid #00d2ff', color: 'white', p: 2 } }}
-      >
-        <DialogTitle sx={{ color: '#00d2ff', textAlign: 'center', fontWeight: 'bold' }}>Comprobante de Préstamo</DialogTitle>
-        <DialogContent>
-          {loanReceipt && (
-            <Box sx={{ minWidth: "300px", '& p': { mb: 1, borderBottom: '1px solid rgba(255,255,255,0.1)', pb: 0.5 } }}>
-              <p><strong>ID Préstamo:</strong> {loanReceipt.id}</p>
-              <p><strong>Cliente:</strong> {loanReceipt.client?.username || selectedClient?.username}</p>
-              <p><strong>Herramienta:</strong> {loanReceipt.tool?.name || selectedTool?.name}</p>
-              <p><strong>Fecha Inicio:</strong> {loanReceipt.startDate}</p>
-              <p><strong>Fecha Devolución:</strong> {loanReceipt.scheduledReturnDate}</p>
-              <p><strong>Precio del préstamo:</strong> <span style={{ color: '#00d2ff' }}>${loanReceipt.loanPrice || '0'}</span></p>
-              
-              <Box display="flex" justifyContent="center" mt={3}>
-                <Button variant="contained" sx={{ ...cyanButtonStyle, mt: 0 }} onClick={handleCloseReceipt}>
-                  Aceptar y Volver al Inicio
-                </Button>
+        <Dialog 
+          open={openReceiptDialog} 
+          onClose={handleCloseReceipt}
+          PaperProps={{ sx: { bgcolor: '#1d0b3b', border: '2px solid #00d2ff', color: 'white', p: 2 } }}
+        >
+          <DialogTitle sx={{ color: '#00d2ff', textAlign: 'center', fontWeight: 'bold' }}>Comprobante de Préstamo</DialogTitle>
+          <DialogContent>
+            {loanReceipt && (
+              <Box sx={{ minWidth: "300px", '& p': { mb: 1, borderBottom: '1px solid rgba(255,255,255,0.1)', pb: 0.5 } }}>
+                <p><strong>ID Préstamo:</strong> {loanReceipt.id}</p>
+                <p><strong>Cliente:</strong> {loanReceipt.client?.username || selectedClient?.username}</p>
+                <p><strong>Herramienta:</strong> {loanReceipt.tool?.name || selectedTool?.name}</p>
+                <p><strong>Fecha Inicio:</strong> {loanReceipt.startDate}</p>
+                <p><strong>Fecha Devolución:</strong> {loanReceipt.scheduledReturnDate}</p>
+                <p><strong>Precio del préstamo:</strong> <span style={{ color: '#00d2ff' }}>${loanReceipt.loanPrice || '0'}</span></p>
+                
+                <Box display="flex" justifyContent="center" mt={3}>
+                  <Button variant="contained" sx={{ ...cyanButtonStyle, mt: 0 }} onClick={handleCloseReceipt}>
+                    Aceptar y Volver al Inicio
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          )}
-        </DialogContent>
-      </Dialog>
+            )}
+          </DialogContent>
+        </Dialog>
 
-      <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={() => setOpenErrorSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
-        <Alert severity="error" variant="filled" sx={{ bgcolor: "#f44336", color: "white", fontWeight: "bold" }}>{errorMessage}</Alert>
-      </Snackbar>
-    </Box>
+        <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={() => setOpenErrorSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+          <Alert severity="error" variant="filled" sx={{ bgcolor: "#f44336", color: "white", fontWeight: "bold" }}>{errorMessage}</Alert>
+        </Snackbar>
+      </Box>
+    </LocalizationProvider>
   );
 };
 
 export default AddLoan;
-
-
-
