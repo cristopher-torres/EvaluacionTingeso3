@@ -1,72 +1,45 @@
 import { useEffect, useState } from "react";
 import { getUnpaidLoans, updateFinePaid } from "../services/loan.service";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import TextField from "@mui/material/TextField";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Tooltip from "@mui/material/Tooltip";
+import { 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
+  Paper, Button, Box, Typography, Backdrop, CircularProgress, 
+  Snackbar, Alert, TextField, Dialog, DialogActions, DialogContent, 
+  DialogContentText, DialogTitle, Tooltip, Divider 
+} from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-
 import PageHelp from "../components/PageHelp";
 
 const UnpaidLoansPage = () => {
   const [loans, setLoans] = useState([]);
   const [filteredLoans, setFilteredLoans] = useState([]);
   const [rutFilter, setRutFilter] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState("");
   const [severity, setSeverity] = useState("success");
-
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [loanToPay, setLoanToPay] = useState(null);
 
   const fetchUnpaidLoans = () => {
     setLoading(true);
-    setLoadingMessage("Cargando multas pendientes...");
+    setLoadingMessage("Sincronizando multas...");
     getUnpaidLoans()
       .then(res => {
         setLoans(res.data);
         setFilteredLoans(res.data);
       })
-      .catch(err => {
-        console.error("Error cargando préstamos:", err);
-        showFeedback("Error al cargar la lista", "error");
-      })
+      .catch(() => showFeedback("Error al conectar con el servidor", "error"))
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => {
-    fetchUnpaidLoans();
-  }, []);
+  useEffect(() => { fetchUnpaidLoans(); }, []);
 
   useEffect(() => {
-    if (!rutFilter.trim()) {
-      setFilteredLoans(loans);
-    } else {
-      const filtered = loans.filter(loan => 
-        loan.client?.rut?.toLowerCase().includes(rutFilter.toLowerCase())
-      );
-      setFilteredLoans(filtered);
-    }
+    const filtered = loans.filter(loan => 
+      loan.client?.rut?.toLowerCase().includes(rutFilter.toLowerCase())
+    );
+    setFilteredLoans(filtered);
   }, [rutFilter, loans]);
 
   const showFeedback = (msg, type) => {
@@ -80,125 +53,96 @@ const UnpaidLoansPage = () => {
     setConfirmDialogOpen(true);
   };
 
-  const handleCloseConfirmDialog = () => {
-    setConfirmDialogOpen(false);
-    setLoanToPay(null);
-  };
-
   const confirmPayment = () => {
     if (!loanToPay) return;
-    
-    handleCloseConfirmDialog();
+    setConfirmDialogOpen(false);
     setLoading(true);
-    setLoadingMessage("Actualizando estado de pago...");
-    
     updateFinePaid(loanToPay.id, true)
       .then(() => {
-        showFeedback("Pago registrado exitosamente ✅", "success");
+        showFeedback("Pago validado exitosamente ✅", "success");
         fetchUnpaidLoans();
       })
-      .catch(err => {
-        console.error("Error actualizando multa:", err);
-        showFeedback("Error al procesar el pago ❌", "error");
-      })
+      .catch(() => showFeedback("Error al registrar el pago ❌", "error"))
       .finally(() => setLoading(false));
   };
 
-  const payButtonStyle = {
-    backgroundColor: "rgba(0, 210, 255, 0.1)",
-    border: "1px solid rgba(0, 210, 255, 0.4)",
-    color: "#00d2ff",
+  const skyButtonStyle = {
+    backgroundColor: "rgba(56, 189, 248, 0.07)",
+    border: "1px solid rgba(56, 189, 248, 0.25)",
+    color: "#7dd3fc",
     textTransform: "none",
-    fontWeight: "bold",
-    outline: "none",
-    "&:hover": {
-      backgroundColor: "#00d2ff",
-      color: "#100524",
-      boxShadow: "0 0 15px rgba(0, 210, 255, 0.6)",
-    },
-    "&:focus": { outline: "none" },
-    "&:focusVisible": { outline: "none" },
-    "&:disabled": {
-      color: "rgba(0, 210, 255, 0.3)",
-      borderColor: "rgba(0, 210, 255, 0.1)"
+    fontWeight: 600,
+    "&:hover": { 
+      backgroundColor: "rgba(56, 189, 248, 0.14)", 
+      color: "#e2e8f0",
+      border: "1px solid rgba(56, 189, 248, 0.4)"
     }
   };
 
   const inputSx = {
     "& .MuiOutlinedInput-root": {
-      color: "white",
-      "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
-      "&:hover fieldset": { borderColor: "#00d2ff" },
-      "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
+      color: "#e2e8f0",
+      "& fieldset": { borderColor: "rgba(148, 163, 184, 0.12)" },
+      "&:hover fieldset": { borderColor: "rgba(56, 189, 248, 0.4)" },
+      "&.Mui-focused fieldset": { borderColor: "#38bdf8" },
     },
-    "& .MuiInputLabel-root": { color: "#b392f0" },
-    "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
+    "& .MuiInputLabel-root": { color: "#94a3b8" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#38bdf8" },
   };
 
   const tableHeaders = [
-    { label: "ID Préstamo", tooltip: "Identificador único del préstamo asociado a la multa" },
-    { label: "ID Usuario", tooltip: "Identificador interno del cliente en el sistema" },
-    { label: "RUT", tooltip: "Rol Único Tributario del cliente" },
-    { label: "Email", tooltip: "Correo electrónico de contacto" },
-    { label: "Teléfono", tooltip: "Número de teléfono de contacto" },
-    { label: "Deuda", tooltip: "Monto total pendiente originado por atrasos o daños" },
-    { label: "Acción", tooltip: "Registrar el pago para regularizar al cliente" }
+    { label: "ID Préstamo", tooltip: "Folio del préstamo asociado" },
+    { label: "ID Cliente", tooltip: "Identificador interno" },
+    { label: "RUT", tooltip: "Identificación fiscal" },
+    { label: "Email", tooltip: "Correo de contacto" },
+    { label: "Teléfono", tooltip: "Número móvil" },
+    { label: "Monto Deuda", tooltip: "Total acumulado por multas o daños" },
+    { label: "Gestión", tooltip: "Registrar recepción de fondos" }
   ];
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#100524', minHeight: '100vh' }}>
-      
-      <Backdrop
-        sx={{ color: '#00d2ff', zIndex: 10, backgroundColor: 'rgba(16, 5, 36, 0.9)', display: 'flex', flexDirection: 'column', gap: 2 }}
-        open={loading}
-      >
+    <Box sx={{ p: 3, bgcolor: '#0f172a', minHeight: '100vh' }}>
+      <Backdrop sx={{ color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
         <CircularProgress color="inherit" />
-        <Typography variant="h6" sx={{ textShadow: "0 0 10px rgba(0, 210, 255, 0.5)" }}>
-          {loadingMessage}
-        </Typography>
+        <Typography variant="h6" sx={{ mt: 2, color: '#38bdf8' }}>{loadingMessage}</Typography>
       </Backdrop>
 
       <Box display="flex" alignItems="center" gap={1} mb={4}>
-        <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
-          Préstamos con Multas No Pagadas
+        <Typography variant="h4" sx={{ color: "#e2e8f0", fontWeight: 700 }}>
+          Control de Multas
         </Typography>
         <PageHelp 
           title="Gestión de Deudas" 
           steps={[
-            "Muestra los préstamos que ya fueron devueltos pero mantienen un saldo pendiente por pagar.",
-            "Busque rápidamente al cliente ingresando su RUT.",
-            "Utilice el botón 'Marcar Pago' una vez que el cliente haya saldado la deuda.",
-            "Recuerde que los clientes con multas impagas se encuentran restringidos."
+            "Visualice las multas generadas por retrasos o daños.",
+            "Utilice el filtro de RUT para ubicar clientes específicos.",
+            "Al recibir el pago físico o transferencia, use 'Marcar Pago'.",
+            "Esta acción liberará la restricción del cliente automáticamente."
           ]} 
         />
       </Box>
 
-      <Box sx={{ mb: 4, p: 2, bgcolor: '#1d0b3b', borderRadius: 2, border: '1px solid rgba(232, 28, 255, 0.2)' }}>
+      <Box sx={{ mb: 4, p: 3, bgcolor: '#1e293b', borderRadius: 2, border: '1px solid rgba(148, 163, 184, 0.12)', borderTop: "3px solid rgba(56, 189, 248, 0.4)" }}>
         <TextField 
-          label="Buscar por RUT" 
+          label="Buscar cliente por RUT" 
           variant="outlined" 
           size="small" 
           fullWidth 
           sx={inputSx} 
           value={rutFilter} 
           onChange={(e) => setRutFilter(e.target.value)} 
-          placeholder="Ej: 12.345.678-9"
           InputProps={{
-            endAdornment: (
-              <Tooltip title="Filtre los registros escribiendo el RUT del cliente" arrow placement="top">
-                <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help", ml: 1 }} />
-              </Tooltip>
-            )
+            endAdornment: <HelpOutlineIcon sx={{ color: "#94a3b8", fontSize: "1.1rem", mr: 1 }} />
           }}
         />
       </Box>
 
-      <TableContainer component={Paper} sx={{ bgcolor: '#1d0b3b', borderRadius: 2, border: "1px solid rgba(0, 210, 255, 0.3)", boxShadow: "0 4px 20px rgba(0, 0, 0, 0.5)" }}>
+      <TableContainer component={Paper} sx={{ bgcolor: '#1e293b', borderRadius: 2, border: "1px solid rgba(148, 163, 184, 0.1)", boxShadow: "0 4px 24px rgba(0, 0, 0, 0.35)" }}>
         <Table>
-          <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
+          <TableHead sx={{ backgroundColor: 'rgba(15, 23, 42, 0.8)' }}>
             <TableRow>
               {tableHeaders.map((head) => (
-                <TableCell key={head.label} sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: '2px solid #e81cff' }}>
+                <TableCell key={head.label} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>
                   <Tooltip title={head.tooltip} arrow placement="top">
                     <span style={{ cursor: 'help' }}>{head.label}</span>
                   </Tooltip>
@@ -208,28 +152,24 @@ const UnpaidLoansPage = () => {
           </TableHead>
           <TableBody>
             {filteredLoans.map((loan) => (
-              <TableRow key={loan.id} sx={{ '&:hover': { backgroundColor: 'rgba(232, 28, 255, 0.05)' }, '& td': { color: '#f1f5f9', borderBottom: '1px solid rgba(255,255,255,0.05)' } }}>
+              <TableRow key={loan.id} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148,163,184,0.07)' } }}>
                 <TableCell>{loan.id}</TableCell>
                 <TableCell>{loan.client?.id}</TableCell>
-                <TableCell>{loan.client?.rut}</TableCell>
+                <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{loan.client?.rut}</TableCell>
                 <TableCell>{loan.client?.email}</TableCell>
                 <TableCell>{loan.client?.phoneNumber}</TableCell>
-                <TableCell sx={{ color: '#e81cff', fontWeight: 'bold' }}>${loan.fineTotal}</TableCell>
+                <TableCell sx={{ color: '#f87171', fontWeight: 700 }}>${loan.fineTotal}</TableCell>
                 <TableCell>
-                  <Tooltip title="Confirmar que el cliente realizó el pago de esta multa" arrow placement="left">
-                    <span>
-                      <Button variant="contained" sx={payButtonStyle} onClick={() => handleOpenConfirmDialog(loan)} disabled={loading}>
-                        Marcar Pago
-                      </Button>
-                    </span>
-                  </Tooltip>
+                  <Button variant="contained" sx={skyButtonStyle} size="small" onClick={() => handleOpenConfirmDialog(loan)}>
+                    Marcar Pago
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
             {!loading && filteredLoans.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ color: "#b392f0", py: 4 }}>
-                  No se encontraron préstamos con multas pendientes que coincidan con la búsqueda.
+                <TableCell colSpan={7} align="center" sx={{ color: "#64748b", py: 8 }}>
+                  No se encontraron deudas pendientes.
                 </TableCell>
               </TableRow>
             )}
@@ -237,41 +177,25 @@ const UnpaidLoansPage = () => {
         </Table>
       </TableContainer>
 
-      <Dialog
-        open={confirmDialogOpen}
-        onClose={handleCloseConfirmDialog}
-        PaperProps={{ sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff", borderRadius: 2 } }}
+      <Dialog 
+        open={confirmDialogOpen} 
+        onClose={() => setConfirmDialogOpen(false)}
+        PaperProps={{ sx: { bgcolor: "#1e293b", border: "1px solid rgba(148, 163, 184, 0.2)", color: "#e2e8f0" } }}
       >
-        <DialogTitle sx={{ color: "#00d2ff", fontWeight: "bold" }}>Confirmar Pago</DialogTitle>
+        <DialogTitle sx={{ color: "#38bdf8", fontWeight: 700 }}>Confirmar Regularización</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ color: "white" }}>
-            ¿Estás seguro de que deseas marcar como pagada la deuda de <strong>${loanToPay?.fineTotal}</strong> del RUT <strong>{loanToPay?.client?.rut}</strong>?
+          <DialogContentText sx={{ color: "#cbd5e1" }}>
+            ¿Confirma que el cliente con RUT <strong>{loanToPay?.client?.rut}</strong> ha cancelado la totalidad de la multa por <strong>${loanToPay?.fineTotal}</strong>?
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleCloseConfirmDialog} sx={{ color: "#b392f0", "&:focus": { outline: "none" } }}>Cancelar</Button>
-          <Button 
-            onClick={confirmPayment} 
-            variant="contained" 
-            sx={{ bgcolor: "#00d2ff", color: "#100524", fontWeight: "bold", "&:hover": { bgcolor: "#00a8cc" }, "&:focus": { outline: "none" } }}
-          >
-            Confirmar
-          </Button>
+        <DialogActions sx={{ p: 3, borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
+          <Button onClick={() => setConfirmDialogOpen(false)} sx={{ color: "#94a3b8", textTransform: 'none' }}>Cancelar</Button>
+          <Button onClick={confirmPayment} variant="contained" sx={skyButtonStyle}>Validar Pago</Button>
         </DialogActions>
       </Dialog>
 
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={3000}
-        onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert 
-          onClose={() => setOpenSnackbar(false)} 
-          severity={severity} 
-          variant="filled" 
-          sx={{ bgcolor: severity === "success" ? "#00d2ff" : "#f44336", color: severity === "success" ? "#100524" : "white", fontWeight: "bold" }}
-        >
+      <Snackbar open={openSnackbar} autoHideDuration={4000} onClose={() => setOpenSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+        <Alert severity={severity} variant="filled" sx={{ bgcolor: severity === "success" ? "#0ea5e9" : "#f87171", color: severity === "success" ? "#0f172a" : "white", fontWeight: 700 }}>
           {snackbarMsg}
         </Alert>
       </Snackbar>

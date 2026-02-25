@@ -42,32 +42,42 @@ function DesktopAppBar() {
 
   return (
     <>
-      <AppBar 
-        position="static" 
+      <AppBar
+        position="static"
         elevation={0}
-        sx={{ 
-          backgroundColor: '#1d0b3b', // Morado oscuro de la ventana de código
+        sx={{
+          // slate-900
+          backgroundColor: '#1e293b',  // slate-800 
           width: "100%",
-          borderBottom: '2px solid #e81cff', // Borde inferior Magenta neón
-          boxShadow: '0 4px 20px rgba(232, 28, 255, 0.15)' // Resplandor magenta
+          // Borde inferior sutil: gris azulado con baja opacidad 
+          borderBottom: '1px solid rgba(56, 189, 248, 0.25)',  // acento celeste sutil
+          // Sombra neutra hacia abajo, sin color
+          boxShadow: '0 4px 24px rgba(0, 0, 0, 0.6)',  // sombra más pronunciada
         }}
       >
         <Container maxWidth={false} disableGutters sx={{ px: 0 }}>
           <Toolbar disableGutters sx={{ px: 0, pl: 2, pr: 2 }}>
+
+            {/* Botón hamburguesa */}
             <IconButton
               size="large"
               edge="start"
               color="inherit"
               aria-label="menu"
-              sx={{ 
+              sx={{
                 mr: 2,
-                '&:hover': { color: '#00d2ff' } // Hover en Cian
+                color: '#94a3b8', 
+                '&:hover': {
+                  color: '#38bdf8',                        
+                  backgroundColor: 'rgba(56,189,248,0.07)',
+                }
               }}
-              onClick={toggleDrawer(true)} 
+              onClick={toggleDrawer(true)}
             >
               <MenuIcon />
             </IconButton>
 
+            {/* Logo + nombre */}
             <Typography
               variant="h6"
               noWrap
@@ -77,9 +87,10 @@ function DesktopAppBar() {
                 mr: 4,
                 display: 'flex',
                 alignItems: 'center',
-                color: '#ffffff',
+                color: '#e2e8f0',  
                 textDecoration: 'none',
-                fontWeight: 'bold'
+                fontWeight: 700,
+                letterSpacing: '-0.01em',
               }}
             >
               <img
@@ -87,10 +98,14 @@ function DesktopAppBar() {
                 alt="ToolRent Logo"
                 style={{ height: 60, marginRight: 5 }}
               />
-              <span style={{ color: '#00d2ff' }}>Tool</span>Rent {/* "Tool" en Cian */}
+              {/* "Tool" en celeste suave */}
+              <span style={{ color: '#38bdf8' }}>Tool</span>Rent
             </Typography>
 
-            <div style={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', marginRight: '60px' }}>
+            {/* Acciones a la derecha */}
+            <div style={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', marginRight: '60px', alignItems: 'center', gap: '8px' }}>
+
+              {/* Botón Inventario */}
               <Button
                 onClick={() => {
                   if (!keycloak.authenticated) {
@@ -106,61 +121,63 @@ function DesktopAppBar() {
                 }}
                 sx={{
                   my: 2,
-                  marginLeft: 2,
-                  borderRadius: 1,
+                  borderRadius: 1.5,
                   textTransform: 'none',
-                  backgroundColor: 'rgba(0, 210, 255, 0.1)', // Fondo cian semitransparente
-                  border: '1px solid rgba(0, 210, 255, 0.3)', // Borde cian
-                  color: '#00d2ff', // Letra cian
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  // Fondo muy sutil, borde discreto
+                  backgroundColor: 'rgba(56, 189, 248, 0.07)',
+                  border: '1px solid rgba(56, 189, 248, 0.2)',
+                  color: '#7dd3fc',  
                   '&:hover': {
-                    backgroundColor: '#00d2ff', 
-                    color: '#100524', // Letra oscura al pasar el mouse
-                    fontWeight: 'bold',
-                    border: '1px solid #00d2ff'
+                    backgroundColor: 'rgba(56, 189, 248, 0.14)',
+                    border: '1px solid rgba(56, 189, 248, 0.4)',
+                    color: '#e2e8f0',  
                   }
                 }}
               >
                 Inventario
               </Button>
 
+              {/* Avatar / Login */}
               {keycloak.authenticated ? (
                 <IconButton
                   onClick={handleMenuOpen}
                   sx={{
-                    my: 2, 
-                    marginLeft: 2,
+                    my: 2,
                     borderRadius: '50%',
-                    width: 40,
-                    height: 40,
-                    backgroundColor: 'rgba(0, 210, 255, 0.1)', 
-                    border: '1px solid rgba(0, 210, 255, 0.3)',
-                    display: 'flex', 
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    width: 38,
+                    height: 38,
+                    backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                    border: '1px solid rgba(56, 189, 248, 0.2)',
                     '&:hover': {
-                      backgroundColor: '#00d2ff',
-                      color: '#100524',
+                      backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                      border: '1px solid rgba(56, 189, 248, 0.4)',
                     },
                   }}
                 >
-                  <Avatar alt={username} src="https://www.example.com/profile.jpg" />
+                  <Avatar
+                    alt={username}
+                    src="https://www.example.com/profile.jpg"
+                    sx={{ width: 30, height: 30, fontSize: '0.85rem' }}
+                  />
                 </IconButton>
               ) : (
                 <Button
                   onClick={() => keycloak.login()}
                   sx={{
                     my: 2,
-                    marginLeft: 2,
-                    borderRadius: 1,
+                    borderRadius: 1.5,
                     textTransform: 'none',
-                    backgroundColor: 'rgba(0, 210, 255, 0.1)',
-                    border: '1px solid rgba(0, 210, 255, 0.3)',
-                    color: '#00d2ff',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    backgroundColor: 'rgba(56, 189, 248, 0.07)',
+                    border: '1px solid rgba(56, 189, 248, 0.2)',
+                    color: '#7dd3fc',
                     '&:hover': {
-                      backgroundColor: '#00d2ff',
-                      color: '#100524',
-                      fontWeight: 'bold',
-                      border: '1px solid #00d2ff'
+                      backgroundColor: 'rgba(56, 189, 248, 0.14)',
+                      border: '1px solid rgba(56, 189, 248, 0.4)',
+                      color: '#e2e8f0',
                     }
                   }}
                 >
@@ -174,24 +191,53 @@ function DesktopAppBar() {
 
       <Sidemenu open={open} toggleDrawer={toggleDrawer} />
 
+      {/* Dropdown del usuario */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         sx={{
           '& .MuiMenu-paper': {
-            backgroundColor: '#1d0b3b', // Morado oscuro
-            color: 'white',
-            border: '1px solid #e81cff' // Borde magenta en el menú desplegable
+            backgroundColor: '#1e293b',
+            color: '#e2e8f0',
+            border: '1px solid rgba(148, 163, 184, 0.15)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+            minWidth: 160,
           },
         }}
       >
-        <MenuItem disabled sx={{ color: '#b392f0', opacity: 1 }}>{username}</MenuItem>
-        <MenuItem onClick={handleLogout} sx={{ '&:hover': { color: '#00d2ff', backgroundColor: 'rgba(0,210,255,0.1)' } }}>Cerrar sesión</MenuItem>
+        <MenuItem
+          disabled
+          sx={{
+            color: '#94a3b8',  
+            opacity: '1 !important',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            borderBottom: '1px solid rgba(148,163,184,0.1)',
+            pb: 1,
+          }}
+        >
+          {username}
+        </MenuItem>
+        <MenuItem
+          onClick={handleLogout}
+          sx={{
+            fontSize: '0.875rem',
+            color: '#e2e8f0',
+            mt: 0.5,
+            '&:hover': {
+              color: '#38bdf8',
+              backgroundColor: 'rgba(56, 189, 248, 0.07)',
+            }
+          }}
+        >
+          Cerrar sesión
+        </MenuItem>
       </Menu>
     </>
   );
 }
 
 export default DesktopAppBar;
-

@@ -1,21 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllClients } from "../services/user.service";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
+  Paper, Button, Box, Typography, Backdrop, CircularProgress, Tooltip, Chip 
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
-import Tooltip from "@mui/material/Tooltip";
-
 import PageHelp from "../components/PageHelp";
 
 const UserList = () => {
@@ -26,78 +16,57 @@ const UserList = () => {
   useEffect(() => {
     setLoading(true);
     getAllClients()
-      .then((res) => {
-        setUsers(res.data);
-      })
-      .catch((err) => {
-        console.error("Error al cargar usuarios:", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      .then((res) => setUsers(res.data))
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  const actionButtonStyle = {
-    backgroundColor: "rgba(0, 210, 255, 0.1)",
-    border: "1px solid rgba(0, 210, 255, 0.5)",
-    color: "#00d2ff",
+  const skyButtonStyle = {
+    backgroundColor: "rgba(56, 189, 248, 0.07)",
+    border: "1px solid rgba(56, 189, 248, 0.2)",
+    color: "#7dd3fc",
     textTransform: "none",
-    fontWeight: "bold",
-    "&:hover": {
-      backgroundColor: "#00d2ff",
-      color: "#100524",
-      boxShadow: "0 0 10px #00d2ff",
+    fontWeight: 600,
+    "&:hover": { 
+      backgroundColor: "rgba(56, 189, 248, 0.14)", 
+      color: "#e2e8f0",
+      border: "1px solid rgba(56, 189, 248, 0.4)"
     }
   };
 
   const tableHeaders = [
     { label: "ID", tooltip: "Identificador interno del usuario" },
     { label: "Rut", tooltip: "Documento de Identidad" },
-    { label: "Username", tooltip: "Nombre de usuario en la pagina" },
-    { label: "Nombre", tooltip: "Nombre del usuario real" },
+    { label: "Username", tooltip: "Nombre de usuario en la plataforma" },
+    { label: "Nombre", tooltip: "Nombres del usuario" },
     { label: "Apellido", tooltip: "Apellidos del usuario" },
     { label: "Email", tooltip: "Correo electrónico de contacto" },
-    { label: "Número de teléfono", tooltip: "Teléfono móvil registrado" },
-    { label: "Estado", tooltip: "Indica si el usuario está ACTIVO o RESTRINGIDO (ej. por multas)" },
-    { label: "Acciones", tooltip: "Opciones disponibles para gestionar el usuario" }
+    { label: "Teléfono", tooltip: "Teléfono móvil registrado" },
+    { label: "Estado", tooltip: "Situación actual de la cuenta" },
+    { label: "Acciones", tooltip: "Gestión de datos de usuario" }
   ];
 
   return (
-    <Box sx={{ 
-      p: 3, 
-      bgcolor: '#100524', 
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <Box sx={{ p: 3, bgcolor: '#0f172a', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       
       <Backdrop
-        sx={{ 
-          color: '#00d2ff', 
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: 'rgba(16, 5, 36, 0.9)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2
-        }}
+        sx={{ color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }}
         open={loading}
       >
         <CircularProgress color="inherit" />
-        <Typography variant="h6" sx={{ textShadow: "0 0 10px rgba(0, 210, 255, 0.5)" }}>
-          Cargando usuarios...
-        </Typography>
+        <Typography variant="h6" sx={{ mt: 2, color: '#38bdf8' }}>Cargando directorio...</Typography>
       </Backdrop>
 
-      <Box display="flex" alignItems="center" gap={1} mb={3}>
-        <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
-          Listado de Usuarios
+      <Box display="flex" alignItems="center" gap={1} mb={4}>
+        <Typography variant="h4" sx={{ color: "#e2e8f0", fontWeight: 700 }}>
+          Directorio de Usuarios
         </Typography>
         <PageHelp 
-          title="Directorio de Clientes" 
+          title="Gestión de Clientes" 
           steps={[
-            "Visualice la lista completa de todos los clientes registrados.",
-            "Compruebe rápidamente el estado (ACTIVO/RESTRINGIDO) de cada cuenta.",
-            "Use el botón 'Editar' para actualizar la información de contacto o corregir datos de un usuario específico."
+            "Visualice la lista completa de clientes registrados.",
+            "Verifique el estado de habilitación de cada cuenta.",
+            "Utilice el botón de edición para actualizar información de contacto."
           ]} 
         />
       </Box>
@@ -105,19 +74,20 @@ const UserList = () => {
       <TableContainer 
         component={Paper} 
         sx={{ 
-          bgcolor: '#1d0b3b', 
+          bgcolor: '#1e293b', 
           borderRadius: 2, 
-          border: "1px solid rgba(0, 210, 255, 0.3)",
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.5)"
+          border: "1px solid rgba(148, 163, 184, 0.1)", 
+          boxShadow: "0 4px 24px rgba(0, 0, 0, 0.35)",
+          borderTop: "3px solid rgba(56, 189, 248, 0.4)"
         }}
       >
         <Table>
-          <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
+          <TableHead sx={{ backgroundColor: 'rgba(15, 23, 42, 0.8)' }}>
             <TableRow>
-              {tableHeaders.map((head) => (
-                <TableCell key={head.label} sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: "2px solid #e81cff" }}>
-                  <Tooltip title={head.tooltip} arrow placement="top">
-                    <span style={{ cursor: 'help' }}>{head.label}</span>
+              {tableHeaders.map((h) => (
+                <TableCell key={h.label} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', borderBottom: '2px solid rgba(56, 189, 248, 0.2)' }}>
+                  <Tooltip title={h.tooltip} arrow placement="top">
+                    <span style={{ cursor: 'help' }}>{h.label}</span>
                   </Tooltip>
                 </TableCell>
               ))}
@@ -128,44 +98,47 @@ const UserList = () => {
               <TableRow 
                 key={user.id} 
                 sx={{ 
-                  '&:hover': { backgroundColor: 'rgba(232, 28, 255, 0.05)' },
-                  '& td': { color: '#f1f5f9', borderBottom: '1px solid rgba(255,255,255,0.05)' } 
+                  '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' },
+                  '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148, 163, 184, 0.07)' } 
                 }}
               >
                 <TableCell>{user.id}</TableCell>
-                <TableCell>{user.rut}</TableCell>
+                <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{user.rut}</TableCell>
                 <TableCell>{user.username}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.lastName}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.phoneNumber}</TableCell>
-                <TableCell sx={{ 
-                  color: user.status === 'ACTIVO' ? '#00ff88' : '#e81cff', 
-                  fontWeight: 'bold' 
-                }}>
-                  <Tooltip title={user.status === 'ACTIVO' ? 'Usuario habilitado para realizar préstamos' : 'Usuario bloqueado temporalmente (posiblemente por multas impagas)'} arrow placement="left">
-                    <span>{user.status}</span>
-                  </Tooltip>
+                <TableCell>
+                  <Chip 
+                    label={user.status} 
+                    size="small"
+                    sx={{ 
+                      backgroundColor: user.status === 'ACTIVO' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(248, 113, 113, 0.1)',
+                      color: user.status === 'ACTIVO' ? '#4ade80' : '#f87171',
+                      fontWeight: 600,
+                      fontSize: '0.7rem',
+                      border: `1px solid ${user.status === 'ACTIVO' ? 'rgba(74, 222, 128, 0.2)' : 'rgba(248, 113, 113, 0.2)'}`
+                    }}
+                  />
                 </TableCell>
                 <TableCell>
-                  <Tooltip title="Modificar los datos personales de este usuario" arrow placement="left">
-                    <Button
-                      variant="contained"
-                      size="small"
-                      startIcon={<EditIcon />}
-                      sx={actionButtonStyle}
-                      onClick={() => navigate(`/users/edit/${user.id}`)}
-                    >
-                      Editar
-                    </Button>
-                  </Tooltip>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<EditIcon />}
+                    sx={skyButtonStyle}
+                    onClick={() => navigate(`/users/edit/${user.id}`)}
+                  >
+                    Editar
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
             {!loading && users.length === 0 && (
               <TableRow>
-                <TableCell colSpan={9} align="center" sx={{ color: "#b392f0", py: 4 }}>
-                  No hay usuarios registrados actualmente.
+                <TableCell colSpan={9} align="center" sx={{ color: "#64748b", py: 8 }}>
+                  No se han encontrado registros de usuarios.
                 </TableCell>
               </TableRow>
             )}
@@ -177,4 +150,3 @@ const UserList = () => {
 };
 
 export default UserList;
-

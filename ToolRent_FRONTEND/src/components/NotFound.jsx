@@ -6,6 +6,22 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 const NotFound = () => {
     const navigate = useNavigate();
 
+    const skyButtonStyle = {
+        backgroundColor: "rgba(56, 189, 248, 0.07)",
+        border: "1px solid rgba(56, 189, 248, 0.2)",
+        color: "#7dd3fc",
+        fontWeight: 600,
+        textTransform: 'none',
+        px: 4,
+        py: 1.2,
+        fontSize: "1rem",
+        '&:hover': {
+            backgroundColor: 'rgba(56, 189, 248, 0.14)',
+            border: '1px solid rgba(56, 189, 248, 0.4)',
+            color: '#e2e8f0',
+        }
+    };
+
     return (
         <Box
             sx={{
@@ -14,28 +30,27 @@ const NotFound = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 minHeight: "100vh",
-                backgroundColor: "#100524", 
+                backgroundColor: "#0f172a",
                 textAlign: "center",
                 p: 3
             }}
         >
-            {/* Icono Neón Magenta */}
             <ErrorOutlineIcon 
                 sx={{ 
-                    fontSize: 100, 
-                    color: "#e81cff", // Magenta neón
-                    filter: "drop-shadow(0 0 15px rgba(232, 28, 255, 0.6))",
-                    mb: 2
+                    fontSize: 120, 
+                    color: "#38bdf8", 
+                    mb: 2,
+                    opacity: 0.8
                 }} 
             />
 
             <Typography 
                 variant="h2" 
                 sx={{ 
-                    color: "#00d2ff", // Cian brillante
-                    fontWeight: "bold",
+                    color: "#e2e8f0", 
+                    fontWeight: 700,
                     mb: 1,
-                    textShadow: "0 0 20px rgba(0, 210, 255, 0.5)"
+                    letterSpacing: '-0.02em'
                 }}
             >
                 404
@@ -44,32 +59,20 @@ const NotFound = () => {
             <Typography 
                 variant="h5" 
                 sx={{ 
-                    color: "#b392f0", // Lila suave para texto secundario
-                    mb: 4,
-                    maxWidth: "500px"
+                    color: "#94a3b8", 
+                    mb: 5, 
+                    maxWidth: "500px",
+                    fontWeight: 400,
+                    lineHeight: 1.6
                 }}
             >
-                Página web no está disponible
+                La página que estás buscando no existe o ha sido movida temporalmente.
             </Typography>
 
             <Button
                 variant="contained"
                 onClick={() => navigate("/")}
-                sx={{
-                    backgroundColor: "rgba(0, 210, 255, 0.1)",
-                    border: "1px solid #00d2ff",
-                    color: "#00d2ff",
-                    fontWeight: "bold",
-                    px: 4,
-                    py: 1.5,
-                    textTransform: "none",
-                    fontSize: "1.1rem",
-                    "&:hover": { 
-                        backgroundColor: "#00d2ff", 
-                        color: "#100524",
-                        boxShadow: "0 0 25px rgba(0, 210, 255, 0.6)" 
-                    },
-                }}
+                sx={skyButtonStyle}
             >
                 Volver al Inicio
             </Button>

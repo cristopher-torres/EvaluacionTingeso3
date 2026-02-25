@@ -11,7 +11,13 @@ const PageHelp = ({ title, steps }) => {
   return (
     <>
       <Tooltip title="Ayuda sobre esta vista">
-        <IconButton onClick={openHelp} sx={{ color: "#e81cff" }}>
+        <IconButton 
+          onClick={openHelp} 
+          sx={{ 
+            color: "#38bdf8",
+            "&:hover": { backgroundColor: "rgba(56, 189, 248, 0.08)" }
+          }}
+        >
           <HelpOutlineIcon />
         </IconButton>
       </Tooltip>
@@ -23,21 +29,41 @@ const PageHelp = ({ title, steps }) => {
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         PaperProps={{ 
           sx: { 
-            p: 2, 
-            bgcolor: '#1d0b3b', 
-            color: 'white', 
-            border: '1px solid #00d2ff',
-            maxWidth: 300,
-            boxShadow: '0 4px 20px rgba(0, 210, 255, 0.3)'
+            p: 2.5, 
+            bgcolor: '#1e293b', 
+            color: '#e2e8f0', 
+            border: '1px solid rgba(148, 163, 184, 0.2)',
+            maxWidth: 320,
+            borderRadius: 2,
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)'
           } 
         }}
       >
-        <Typography variant="subtitle2" sx={{ color: "#e81cff", mb: 1, fontWeight: "bold", fontSize: '1rem' }}>
+        <Typography 
+          variant="subtitle2" 
+          sx={{ 
+            color: "#38bdf8", 
+            mb: 1.5, 
+            fontWeight: 700, 
+            fontSize: '0.9rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}
+        >
           {title}
         </Typography>
-        <Box component="ul" sx={{ pl: 2, m: 0, fontSize: '0.9rem' }}>
+        <Box 
+          component="ul" 
+          sx={{ 
+            pl: 2, 
+            m: 0, 
+            fontSize: '0.875rem',
+            color: '#94a3b8',
+            lineHeight: 1.6
+          }}
+        >
           {steps.map((step, index) => (
-            <li key={index} style={{ marginBottom: '6px' }}>{step}</li>
+            <li key={index} style={{ marginBottom: '8px' }}>{step}</li>
           ))}
         </Box>
       </Popover>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useKeycloak } from "@react-keycloak/web";
 import loanService from "../services/loan.service";
 import toolService from "../services/tool.service";
@@ -19,7 +19,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Tooltip from "@mui/material/Tooltip";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline"; 
-import { Link } from "react-router-dom";
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -122,24 +121,24 @@ const AddLoan = () => {
 
   const inputSx = {
     "& .MuiOutlinedInput-root": {
-      color: "white",
+      color: "#e2e8f0",
       fontSize: "1rem", 
-      "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
-      "&:hover fieldset": { borderColor: "#00d2ff" },
-      "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
+      "& fieldset": { borderColor: "rgba(148, 163, 184, 0.12)" },
+      "&:hover fieldset": { borderColor: "rgba(56, 189, 248, 0.4)" },
+      "&.Mui-focused fieldset": { borderColor: "#38bdf8" },
     },
-    "& .MuiInputLabel-root": { color: "#b392f0", fontSize: "1rem" },
-    "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
-    "& .MuiSvgIcon-root": { color: "#00d2ff" }
+    "& .MuiInputLabel-root": { color: "#94a3b8", fontSize: "1rem" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#38bdf8" },
+    "& .MuiSvgIcon-root": { color: "#38bdf8" }
   };
 
   const dateInputSx = {
     "& .MuiOutlinedInput-root": {
-      color: "white",
+      color: "#e2e8f0",
       fontSize: "1rem", 
-      "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
-      "&:hover fieldset": { borderColor: "#00d2ff" },
-      "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
+      "& fieldset": { borderColor: "rgba(148, 163, 184, 0.12)" },
+      "&:hover fieldset": { borderColor: "rgba(56, 189, 248, 0.4)" },
+      "&.Mui-focused fieldset": { borderColor: "#38bdf8" },
       cursor: "pointer",
       paddingRight: "12px", 
     },
@@ -153,14 +152,14 @@ const AddLoan = () => {
       "&::selection": { backgroundColor: "transparent" },
     },
     "& .MuiInputLabel-root": { 
-      color: "#b392f0", 
+      color: "#94a3b8", 
       pointerEvents: "none",
       fontSize: "1rem", 
       maxWidth: "calc(100% - 50px)", 
     },
-    "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#38bdf8" },
     "& .MuiIconButton-root": { 
-      color: "#00d2ff", 
+      color: "#38bdf8", 
       pointerEvents: "none",
       padding: "8px", 
       marginRight: "10px", 
@@ -169,62 +168,58 @@ const AddLoan = () => {
 
   const popperSx = {
     '& .MuiPaper-root': {
-      backgroundColor: '#1d0b3b',
-      border: '1px solid #00d2ff',
-      color: 'white',
-      boxShadow: '0 4px 20px rgba(0, 210, 255, 0.3)',
+      backgroundColor: '#1e293b',
+      border: '1px solid rgba(56, 189, 248, 0.2)',
+      color: '#e2e8f0',
+      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
     },
-    '& .MuiPickersCalendarHeader-root': { color: '#00d2ff' },
-    '& .MuiIconButton-root': { color: '#00d2ff' },
+    '& .MuiPickersCalendarHeader-root': { color: '#38bdf8' },
+    '& .MuiIconButton-root': { color: '#38bdf8' },
     '& .MuiPickersDay-root': {
-      color: 'white',
-      '&:hover': { backgroundColor: 'rgba(0, 210, 255, 0.2)' },
+      color: '#e2e8f0',
+      '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.08)' },
       '&.Mui-selected': {
-        backgroundColor: '#00d2ff',
-        color: '#100524',
-        '&:hover': { backgroundColor: '#00a8cc' },
+        backgroundColor: '#0ea5e9',
+        color: '#0f172a',
+        '&:hover': { backgroundColor: '#38bdf8' },
       },
-      '&.MuiPickersDay-today': { border: '1px solid #e81cff' }
+      '&.MuiPickersDay-today': { border: '1px solid rgba(56, 189, 248, 0.3)' }
     },
-    '& .MuiDayCalendar-weekDayLabel': { color: '#b392f0' },
-    '& .MuiPickersYear-yearButton': {
-       color: 'white',
-       '&.Mui-selected': { backgroundColor: '#00d2ff', color: '#100524' }
-    },
-    '& .MuiPickersMonth-monthButton': {
-       color: 'white',
-       '&.Mui-selected': { backgroundColor: '#00d2ff', color: '#100524' },
-       textTransform: 'capitalize'
-    }
+    '& .MuiDayCalendar-weekDayLabel': { color: '#94a3b8' }
   };
 
-  const cyanButtonStyle = {
+  const skyButtonStyle = {
     mt: 2, 
-    bgcolor: "rgba(0, 210, 255, 0.1)", 
-    border: "1px solid #00d2ff", 
-    color: "#00d2ff", 
-    fontWeight: "bold", 
+    bgcolor: "rgba(56, 189, 248, 0.07)", 
+    border: "1px solid rgba(56, 189, 248, 0.2)", 
+    color: "#7dd3fc", 
+    fontWeight: 600, 
     fontSize: "1rem", 
     py: 1.5, 
     textTransform: "none", 
     outline: "none",
-    "&:hover": { bgcolor: "#00d2ff", color: "#100524", boxShadow: "0 0 20px rgba(0, 210, 255, 0.6)" },
+    "&:hover": { 
+        bgcolor: "rgba(56, 189, 248, 0.14)", 
+        color: "#e2e8f0", 
+        border: "1px solid rgba(56, 189, 248, 0.4)",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)" 
+    },
     "&:focus": { outline: "none" },
     "&:focusVisible": { outline: "none" }
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ bgcolor: "#100524", p: 2 }}>
-        <Backdrop sx={{ color: '#00d2ff', zIndex: 10, bgcolor: 'rgba(16, 5, 36, 0.8)', display: 'flex', flexDirection: 'column', gap: 2 }} open={loading}>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ bgcolor: "#0f172a", p: 2 }}>
+        <Backdrop sx={{ color: '#38bdf8', zIndex: 1201, bgcolor: 'rgba(15, 23, 42, 0.9)', display: 'flex', flexDirection: 'column', gap: 2 }} open={loading}>
           <CircularProgress color="inherit" />
-          <Typography variant="h6" sx={{ textShadow: "0 0 10px rgba(0, 210, 255, 0.5)" }}>{loadingMessage}</Typography>
+          <Typography variant="h6" sx={{ color: '#38bdf8' }}>{loadingMessage}</Typography>
         </Backdrop>
 
-        <Box component="form" onSubmit={saveLoan} sx={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", maxWidth: "550px", p: 4, borderRadius: 3, bgcolor: "#1d0b3b", border: "1px solid rgba(232, 28, 255, 0.4)", boxShadow: "0 8px 32px rgba(232, 28, 255, 0.2)" }}>
+        <Box component="form" onSubmit={saveLoan} sx={{ display: "flex", flexDirection: "column", gap: 3, width: "100%", maxWidth: "550px", p: 4, borderRadius: 3, bgcolor: "#1e293b", border: "1px solid rgba(148, 163, 184, 0.1)", borderTop: "3px solid rgba(56, 189, 248, 0.4)", boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)" }}>
           
           <Box display="flex" justifyContent="center" alignItems="center" gap={1}>
-            <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold" }}>
+            <Typography variant="h5" align="center" sx={{ color: "#38bdf8", fontWeight: 700 }}>
               Registrar Préstamo
             </Typography>
             <PageHelp 
@@ -236,7 +231,7 @@ const AddLoan = () => {
                   Si un usuario no aparece en la búsqueda, es porque está restringido o no se ha registrado en el sistema, revisar en la{" "}
                   <Link 
                     to="/users/list" 
-                    style={{ color: "#00d2ff", textDecoration: "underline", fontWeight: "bold" }}
+                    style={{ color: "#7dd3fc", textDecoration: "underline", fontWeight: 600 }}
                   >
                     lista de usuarios
                   </Link>.
@@ -266,7 +261,7 @@ const AddLoan = () => {
                   endAdornment: (
                     <>
                       <Tooltip title="Solo se muestran herramientas disponibles" arrow placement="top">
-                        <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", mr: 1, cursor: "help" }} />
+                        <HelpOutlineIcon sx={{ color: "#94a3b8", fontSize: "1.1rem", mr: 1, cursor: "help" }} />
                       </Tooltip>
                       {p.InputProps.endAdornment}
                     </>
@@ -274,7 +269,7 @@ const AddLoan = () => {
                 }}
               />
             )}
-            slotProps={{ paper: { sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff" } } }}
+            slotProps={{ paper: { sx: { bgcolor: "#1e293b", color: "#e2e8f0", border: "1px solid rgba(56, 189, 248, 0.2)" } } }}
           />
 
           <Autocomplete
@@ -301,7 +296,7 @@ const AddLoan = () => {
                         arrow 
                         placement="top"
                       >
-                        <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", mr: 1, cursor: "help" }} />
+                        <HelpOutlineIcon sx={{ color: "#94a3b8", fontSize: "1.1rem", mr: 1, cursor: "help" }} />
                       </Tooltip>
                       {p.InputProps.endAdornment}
                     </>
@@ -309,7 +304,7 @@ const AddLoan = () => {
                 }}
               />
             )}
-            slotProps={{ paper: { sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #00d2ff" } } }}
+            slotProps={{ paper: { sx: { bgcolor: "#1e293b", color: "#e2e8f0", border: "1px solid rgba(56, 189, 248, 0.2)" } } }}
           />
 
           <Box sx={{ display: 'flex', gap: 2 }}>
@@ -345,7 +340,6 @@ const AddLoan = () => {
                     inputProps={{
                       ...params.inputProps,
                       value: startDate ? startDate.format("DD/MM/YYYY") : "",
-                      placeholder: "",
                       readOnly: true
                     }}
                   />
@@ -381,7 +375,6 @@ const AddLoan = () => {
                     inputProps={{
                       ...params.inputProps,
                       value: scheduledReturnDate ? scheduledReturnDate.format("DD/MM/YYYY") : "",
-                      placeholder: "",
                       readOnly: true
                     }}
                   />
@@ -391,32 +384,32 @@ const AddLoan = () => {
             />
           </Box>
 
-          <Tooltip title="Asegúrese de que las fechas y el cliente sean correctos">
-            <Button ref={submitBtnRef} type="submit" variant="contained" sx={cyanButtonStyle} startIcon={<SaveIcon />}>
-              Confirmar Préstamo
-            </Button>
-          </Tooltip>
+          <Button ref={submitBtnRef} type="submit" variant="contained" sx={skyButtonStyle} startIcon={<SaveIcon />}>
+            Confirmar Préstamo
+          </Button>
         </Box>
 
         <Dialog 
           open={openReceiptDialog} 
           onClose={handleCloseReceipt}
-          PaperProps={{ sx: { bgcolor: '#1d0b3b', border: '2px solid #00d2ff', color: 'white', p: 2 } }}
+          PaperProps={{ sx: { bgcolor: '#1e293b', border: '1px solid rgba(56, 189, 248, 0.3)', color: '#e2e8f0', p: 1 } }}
         >
-          <DialogTitle sx={{ color: '#00d2ff', textAlign: 'center', fontWeight: 'bold' }}>Comprobante de Préstamo</DialogTitle>
+          <DialogTitle sx={{ color: '#38bdf8', textAlign: 'center', fontWeight: 700 }}>Comprobante de Préstamo</DialogTitle>
           <DialogContent>
             {loanReceipt && (
-              <Box sx={{ minWidth: "300px", '& p': { mb: 1, borderBottom: '1px solid rgba(255,255,255,0.1)', pb: 0.5 } }}>
-                <p><strong>ID Préstamo:</strong> {loanReceipt.id}</p>
-                <p><strong>Cliente:</strong> {loanReceipt.client?.username || selectedClient?.username} ({loanReceipt.client?.rut || selectedClient?.rut})</p>
-                <p><strong>Herramienta:</strong> {loanReceipt.tool?.name || selectedTool?.name}</p>
-                <p><strong>Fecha Inicio:</strong> {loanReceipt.startDate}</p>
-                <p><strong>Fecha Devolución:</strong> {loanReceipt.scheduledReturnDate}</p>
-                <p><strong>Precio del préstamo:</strong> <span style={{ color: '#00d2ff' }}>${loanReceipt.loanPrice || '0'}</span></p>
+              <Box sx={{ minWidth: "300px", mt: 1, '& p': { mb: 1.5, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(148, 163, 184, 0.1)', pb: 0.5 } }}>
+                <p><Typography sx={{ color: '#94a3b8' }}>ID Préstamo:</Typography> <strong>{loanReceipt.id}</strong></p>
+                <p><Typography sx={{ color: '#94a3b8' }}>Cliente:</Typography> <strong>{loanReceipt.client?.username || selectedClient?.username}</strong></p>
+                <p><Typography sx={{ color: '#94a3b8' }}>Herramienta:</Typography> <strong>{loanReceipt.tool?.name || selectedTool?.name}</strong></p>
+                <p><Typography sx={{ color: '#94a3b8' }}>Fecha Inicio:</Typography> <strong>{loanReceipt.startDate}</strong></p>
+                <p><Typography sx={{ color: '#94a3b8' }}>Fecha Devolución:</Typography> <strong>{loanReceipt.scheduledReturnDate}</strong></p>
+                <Typography variant="h5" sx={{ textAlign: 'right', mt: 3, mb: 1, color: '#38bdf8', fontWeight: 700 }}>
+                  Total: ${loanReceipt.loanPrice || '0'}
+                </Typography>
                 
                 <Box display="flex" justifyContent="center" mt={3}>
-                  <Button variant="contained" sx={{ ...cyanButtonStyle, mt: 0 }} onClick={handleCloseReceipt}>
-                    Aceptar y Volver al Inicio
+                  <Button variant="contained" sx={{ ...skyButtonStyle, width: '100%', mt: 0 }} onClick={handleCloseReceipt}>
+                    Aceptar y Volver
                   </Button>
                 </Box>
               </Box>
@@ -425,7 +418,7 @@ const AddLoan = () => {
         </Dialog>
 
         <Snackbar open={openErrorSnackbar} autoHideDuration={5000} onClose={() => setOpenErrorSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
-          <Alert severity="error" variant="filled" sx={{ bgcolor: "#f44336", color: "white", fontWeight: "bold" }}>{errorMessage}</Alert>
+          <Alert severity="error" variant="filled" sx={{ bgcolor: "#f87171", color: "white", fontWeight: 700 }}>{errorMessage}</Alert>
         </Snackbar>
       </Box>
     </LocalizationProvider>

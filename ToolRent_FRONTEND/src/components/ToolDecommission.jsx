@@ -5,11 +5,10 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Button, TextField, Box, Typography, Backdrop, 
   CircularProgress, Snackbar, Alert, Dialog, DialogActions, 
-  DialogContent, DialogContentText, DialogTitle, Tooltip 
+  DialogContent, DialogContentText, DialogTitle, Tooltip, Divider
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { useKeycloak } from "@react-keycloak/web";
-
 import PageHelp from "../components/PageHelp";
 
 const ToolDecommission = () => {
@@ -21,10 +20,8 @@ const ToolDecommission = () => {
   const [loadingMessage, setLoadingMessage] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState("");
-  
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedTool, setSelectedTool] = useState(null);
-  
   const rut = keycloak?.tokenParsed?.rut;
 
   const init = () => {
@@ -53,13 +50,10 @@ const ToolDecommission = () => {
 
   const handleDecommission = () => {
     if (!selectedTool) return;
-    
     handleCloseConfirm();
     setLoading(true);
-    setLoadingMessage(`Dando de baja: ${selectedTool.name}...`);
-
+    setLoadingMessage(`Procesando baja...`);
     const toolDetails = { ...selectedTool, status: "DADA_DE_BAJA" };
-
     toolService.update(toolDetails, rut)
       .then(() => {
         setSnackbarMsg("Herramienta dada de baja exitosamente ✅");
@@ -85,47 +79,58 @@ const ToolDecommission = () => {
 
   const inputSx = {
     "& .MuiOutlinedInput-root": {
-      color: "white",
-      "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
-      "&:hover fieldset": { borderColor: "#00d2ff" },
-      "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
+      color: "#e2e8f0",
+      "& fieldset": { borderColor: "rgba(148, 163, 184, 0.12)" },
+      "&:hover fieldset": { borderColor: "rgba(56, 189, 248, 0.4)" },
+      "&.Mui-focused fieldset": { borderColor: "#38bdf8" },
     },
-    "& .MuiInputLabel-root": { color: "#b392f0" },
-    "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
+    "& .MuiInputLabel-root": { color: "#94a3b8" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#38bdf8" },
+  };
+
+  const destructiveButtonStyle = {
+    backgroundColor: "rgba(248, 113, 113, 0.05)",
+    border: "1px solid rgba(248, 113, 113, 0.3)",
+    color: "#f87171",
+    fontWeight: 600,
+    textTransform: "none",
+    "&:hover": { 
+      backgroundColor: "#f87171", 
+      color: "#0f172a",
+      boxShadow: "0 4px 12px rgba(248, 113, 113, 0.2)"
+    }
   };
 
   const tableHeaders = [
-    { label: "ID", tooltip: "Identificador único de la herramienta en el sistema" },
-    { label: "Nombre", tooltip: "Nombre descriptivo de la herramienta" },
+    { label: "ID", tooltip: "Identificador único de la herramienta" },
+    { label: "Nombre", tooltip: "Nombre descriptivo" },
     { label: "Categoría", tooltip: "Clasificación de la herramienta" },
-    { label: "Estado", tooltip: "Disponibilidad actual en el inventario" },
-    { label: "Acciones", tooltip: "Operaciones que puede realizar sobre este registro" }
+    { label: "Estado", tooltip: "Disponibilidad actual" },
+    { label: "Acciones", tooltip: "Operaciones disponibles" }
   ];
 
   return (
-    <Box sx={{ p: 3, bgcolor: '#100524', minHeight: '100vh' }}>
-      
-      <Backdrop sx={{ color: '#00d2ff', zIndex: (theme) => theme.zIndex.drawer + 2, backgroundColor: 'rgba(16, 5, 36, 0.9)', display: 'flex', flexDirection: 'column', gap: 2 }} open={loading}>
+    <Box sx={{ p: 3, bgcolor: '#0f172a', minHeight: '100vh' }}>
+      <Backdrop sx={{ color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
         <CircularProgress color="inherit" />
-        <Typography variant="h6">{loadingMessage}</Typography>
+        <Typography variant="h6" sx={{ mt: 2, color: '#38bdf8' }}>{loadingMessage}</Typography>
       </Backdrop>
 
       <Box display="flex" alignItems="center" gap={1} mb={4}>
-        <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
+        <Typography variant="h4" sx={{ color: "#e2e8f0", fontWeight: 700 }}>
           Dar de baja herramientas
         </Typography>
         <PageHelp 
           title="Gestión de Bajas" 
           steps={[
-            "Busque la herramienta que desea retirar utilizando el buscador.",
-            "Haga clic en el botón rojo 'Dar de baja' en la fila correspondiente.",
-            "Confirme la acción en la ventana emergente.",
-            "Una vez dada de baja, la herramienta no podrá volver a ser prestada."
+            "Busque la herramienta utilizando el filtro superior.",
+            "Utilice el botón 'Dar de baja' para iniciar el proceso de retiro.",
+            "Esta acción es permanente y la herramienta no podrá volver a circular."
           ]} 
         />
       </Box>
 
-      <Box sx={{ mb: 4, p: 2, bgcolor: '#1d0b3b', borderRadius: 2, border: '1px solid rgba(232, 28, 255, 0.2)' }}>
+      <Box sx={{ mb: 4, p: 3, bgcolor: '#1e293b', borderRadius: 2, border: '1px solid rgba(148, 163, 184, 0.12)', borderTop: "3px solid rgba(248, 113, 113, 0.4)" }}>
         <TextField 
           label="Buscar por ID, Nombre o Categoría" 
           variant="outlined" 
@@ -136,20 +141,20 @@ const ToolDecommission = () => {
           onChange={(e) => setSearchTerm(e.target.value)} 
           InputProps={{
             endAdornment: (
-              <Tooltip title="Filtre dinámicamente las herramientas disponibles ingresando cualquier coincidencia" arrow placement="top">
-                <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help", ml: 1 }} />
+              <Tooltip title="Filtrado dinámico de inventario" arrow placement="top">
+                <HelpOutlineIcon sx={{ color: "#94a3b8", fontSize: "1.1rem", cursor: "help" }} />
               </Tooltip>
             )
           }}
         />
       </Box>
 
-      <TableContainer component={Paper} sx={{ bgcolor: '#1d0b3b', borderRadius: 2, border: "1px solid rgba(0, 210, 255, 0.3)", boxShadow: "0 4px 20px rgba(0, 0, 0, 0.5)" }}>
+      <TableContainer component={Paper} sx={{ bgcolor: '#1e293b', borderRadius: 2, border: "1px solid rgba(148, 163, 184, 0.1)", boxShadow: "0 4px 24px rgba(0, 0, 0, 0.35)" }}>
         <Table>
-          <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
+          <TableHead sx={{ backgroundColor: 'rgba(15, 23, 42, 0.8)' }}>
             <TableRow>
               {tableHeaders.map((header) => (
-                <TableCell key={header.label} sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: '2px solid #e81cff' }}>
+                <TableCell key={header.label} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>
                   <Tooltip title={header.tooltip} arrow placement="top">
                     <span style={{ cursor: 'help' }}>{header.label}</span>
                   </Tooltip>
@@ -159,31 +164,29 @@ const ToolDecommission = () => {
           </TableHead>
           <TableBody>
             {filteredTools.map((tool) => (
-              <TableRow key={tool.id} sx={{ '&:hover': { backgroundColor: 'rgba(232, 28, 255, 0.05)' }, '& td': { color: '#f1f5f9', borderBottom: '1px solid rgba(255,255,255,0.05)' } }}>
+              <TableRow key={tool.id} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148,163,184,0.07)' } }}>
                 <TableCell>{tool.id}</TableCell>
-                <TableCell>{tool.name}</TableCell>
+                <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{tool.name}</TableCell>
                 <TableCell>{tool.category}</TableCell>
-                <TableCell sx={{ color: '#00ff88', fontWeight: 'bold' }}>{tool.status}</TableCell>
                 <TableCell>
-                  <Tooltip title="Retirar permanentemente esta herramienta del inventario activo" arrow placement="left">
-                    <Button
-                      variant="contained"
-                      sx={{
-                        backgroundColor: "rgba(255, 23, 68, 0.1)", border: "1px solid #ff1744", color: "#ff1744", fontWeight: "bold", textTransform: "none",
-                        "&:hover": { backgroundColor: "#ff1744", color: "white", boxShadow: "0 0 15px #ff1744" }
-                      }}
-                      onClick={() => handleOpenConfirm(tool)}
-                    >
-                      Dar de baja
-                    </Button>
-                  </Tooltip>
+                  <Typography sx={{ color: '#4ade80', fontWeight: 600, fontSize: '0.85rem' }}>{tool.status}</Typography>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={destructiveButtonStyle}
+                    onClick={() => handleOpenConfirm(tool)}
+                  >
+                    Dar de baja
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
             {!loading && filteredTools.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ color: "#b392f0", py: 4 }}>
-                  No se encontraron herramientas para dar de baja.
+                <TableCell colSpan={5} align="center" sx={{ color: "#64748b", py: 8 }}>
+                  No se encontraron herramientas disponibles para retirar.
                 </TableCell>
               </TableRow>
             )}
@@ -194,28 +197,28 @@ const ToolDecommission = () => {
       <Dialog
         open={openConfirm}
         onClose={handleCloseConfirm}
-        PaperProps={{ sx: { bgcolor: "#1d0b3b", color: "white", border: "1px solid #ff1744", borderRadius: 2 } }}
+        PaperProps={{ sx: { bgcolor: "#1e293b", border: "1px solid rgba(248, 113, 113, 0.3)", color: "#e2e8f0", borderRadius: 2 } }}
       >
-        <DialogTitle sx={{ color: "#ff1744", fontWeight: "bold" }}>¿Confirmar baja de herramienta?</DialogTitle>
+        <DialogTitle sx={{ color: "#f87171", fontWeight: 700 }}>Confirmar Baja</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ color: "white" }}>
-            Esta acción marcará la herramienta <strong>{selectedTool?.name}</strong> como fuera de servicio permanentemente. ¿Deseas continuar?
+          <DialogContentText sx={{ color: "#cbd5e1" }}>
+            ¿Está seguro que desea dar de baja la herramienta <strong>{selectedTool?.name}</strong>? Esta acción lo removerá permanentemente del flujo de préstamos.
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleCloseConfirm} sx={{ color: "white" }}>Cancelar</Button>
+        <DialogActions sx={{ p: 3 }}>
+          <Button onClick={handleCloseConfirm} sx={{ color: "#94a3b8", textTransform: 'none' }}>Cancelar</Button>
           <Button 
             onClick={handleDecommission} 
             variant="contained" 
-            sx={{ bgcolor: "#ff1744", color: "white", "&:hover": { bgcolor: "#b2102f" } }}
+            sx={{ bgcolor: "#f87171", color: "#0f172a", fontWeight: 700, textTransform: 'none', "&:hover": { bgcolor: "#ef4444" } }}
           >
-            Dar de baja
+            Confirmar Retiro
           </Button>
         </DialogActions>
       </Dialog>
 
       <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
-        <Alert variant="filled" severity="success" sx={{ bgcolor: "#00d2ff", color: "#100524", fontWeight: "bold" }}>{snackbarMsg}</Alert>
+        <Alert variant="filled" severity="success" sx={{ bgcolor: "#0ea5e9", color: "#0f172a", fontWeight: 700 }}>{snackbarMsg}</Alert>
       </Snackbar>
     </Box>
   );

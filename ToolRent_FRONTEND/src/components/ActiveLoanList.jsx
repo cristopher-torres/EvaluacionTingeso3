@@ -25,6 +25,7 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import Chip from "@mui/material/Chip";
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -132,25 +133,29 @@ const ActiveLoanList = () => {
     return `${day}/${month}/${year}`;
   };
 
-  const cyanButtonStyle = {
-    backgroundColor: "rgba(0, 210, 255, 0.1)",
-    border: "1px solid rgba(0, 210, 255, 0.3)",
-    color: "#00d2ff",
+  const skyButtonStyle = {
+    backgroundColor: "rgba(56, 189, 248, 0.07)",
+    border: "1px solid rgba(56, 189, 248, 0.2)",
+    color: "#7dd3fc",
     textTransform: "none",
-    fontWeight: "bold",
+    fontWeight: 600,
     outline: "none",
-    "&:hover": { backgroundColor: "#00d2ff", color: "#100524" },
+    "&:hover": { 
+      backgroundColor: "rgba(56, 189, 248, 0.14)", 
+      color: "#e2e8f0",
+      border: "1px solid rgba(56, 189, 248, 0.4)"
+    },
     "&:focus": { outline: "none" },
     "&:focusVisible": { outline: "none" },
-    "&:disabled": { color: "rgba(0, 210, 255, 0.3)", borderColor: "rgba(0, 210, 255, 0.1)" }
+    "&:disabled": { color: "rgba(148, 163, 184, 0.3)", borderColor: "rgba(148, 163, 184, 0.1)" }
   };
 
   const inputSx = {
     "& .MuiOutlinedInput-root": {
-      color: "white",
-      "& fieldset": { borderColor: "rgba(0, 210, 255, 0.3)" },
-      "&:hover fieldset": { borderColor: "#00d2ff" },
-      "&.Mui-focused fieldset": { borderColor: "#00d2ff" },
+      color: "#e2e8f0",
+      "& fieldset": { borderColor: "rgba(148, 163, 184, 0.12)" },
+      "&:hover fieldset": { borderColor: "rgba(56, 189, 248, 0.4)" },
+      "&.Mui-focused fieldset": { borderColor: "#38bdf8" },
       cursor: "pointer"
     },
     "& .MuiInputBase-input": {
@@ -158,60 +163,45 @@ const ActiveLoanList = () => {
       caretColor: "transparent",
       userSelect: "none",
       pointerEvents: "none", 
-      "&::selection": {
-        backgroundColor: "transparent",
-      },
-      "&::-moz-selection": {
-        backgroundColor: "transparent",
-      }
     },
-    "& .MuiInputLabel-root": { color: "#b392f0", pointerEvents: "none" },
-    "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
-    "& .MuiIconButton-root": { color: "#00d2ff", pointerEvents: "none" }
+    "& .MuiInputLabel-root": { color: "#94a3b8", pointerEvents: "none" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#38bdf8" },
+    "& .MuiIconButton-root": { color: "#38bdf8", pointerEvents: "none" }
   };
 
   const popperSx = {
     '& .MuiPaper-root': {
-      backgroundColor: '#1d0b3b',
-      border: '1px solid #00d2ff',
-      color: 'white',
-      boxShadow: '0 4px 20px rgba(0, 210, 255, 0.3)',
+      backgroundColor: '#1e293b',
+      border: '1px solid rgba(148, 163, 184, 0.15)',
+      color: '#e2e8f0',
+      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
     },
-    '& .MuiPickersCalendarHeader-root': { color: '#00d2ff' },
-    '& .MuiIconButton-root': { color: '#00d2ff' },
+    '& .MuiPickersCalendarHeader-root': { color: '#38bdf8' },
+    '& .MuiIconButton-root': { color: '#38bdf8' },
     '& .MuiPickersDay-root': {
-      color: 'white',
-      '&:hover': { backgroundColor: 'rgba(0, 210, 255, 0.2)' },
+      color: '#e2e8f0',
+      '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.08)' },
       '&.Mui-selected': {
-        backgroundColor: '#00d2ff',
-        color: '#100524',
-        '&:hover': { backgroundColor: '#00a8cc' },
+        backgroundColor: '#0ea5e9',
+        color: '#0f172a',
+        '&:hover': { backgroundColor: '#38bdf8' },
       },
-      '&.MuiPickersDay-today': { border: '1px solid #e81cff' }
+      '&.MuiPickersDay-today': { border: '1px solid rgba(56, 189, 248, 0.3)' }
     },
-    '& .MuiDayCalendar-weekDayLabel': { color: '#b392f0' },
-    '& .MuiPickersYear-yearButton': {
-       color: 'white',
-       '&.Mui-selected': { backgroundColor: '#00d2ff', color: '#100524' }
-    },
-    '& .MuiPickersMonth-monthButton': {
-       color: 'white',
-       '&.Mui-selected': { backgroundColor: '#00d2ff', color: '#100524' },
-       textTransform: 'capitalize'
-    }
+    '& .MuiDayCalendar-weekDayLabel': { color: '#94a3b8' }
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
-      <Box sx={{ p: 3, bgcolor: '#100524', minHeight: '100vh' }}>
+      <Box sx={{ p: 3, bgcolor: '#0f172a', minHeight: '100vh' }}>
         
-        <Backdrop sx={{ color: '#00d2ff', zIndex: 10, backgroundColor: 'rgba(16, 5, 36, 0.9)', display: 'flex', flexDirection: 'column', gap: 2 }} open={loading}>
+        <Backdrop sx={{ color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
           <CircularProgress color="inherit" />
-          <Typography variant="h6">{loadingMessage}</Typography>
+          <Typography variant="h6" sx={{ mt: 2, color: '#38bdf8' }}>{loadingMessage}</Typography>
         </Backdrop>
 
         <Box display="flex" alignItems="center" gap={1} mb={3}>
-          <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold" }}>
+          <Typography variant="h4" sx={{ color: "#e2e8f0", fontWeight: 700 }}>
             Préstamos Activos
           </Typography>
           <PageHelp 
@@ -224,10 +214,10 @@ const ActiveLoanList = () => {
           />
         </Box>
 
-        <Box sx={{ p: 3, mb: 3, bgcolor: '#1d0b3b', borderRadius: 2, border: '1px solid rgba(232, 28, 255, 0.2)', display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ p: 3, mb: 3, bgcolor: '#1e293b', borderRadius: 2, border: '1px solid rgba(148, 163, 184, 0.12)', display: 'flex', flexDirection: 'column', gap: 2, borderTop: "3px solid rgba(56, 189, 248, 0.4)" }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Typography sx={{ color: '#b392f0', fontWeight: 'bold' }}>FECHAS:</Typography>
+                    <Typography variant="overline" sx={{ color: '#38bdf8', fontWeight: 600, letterSpacing: '0.05em' }}>Filtros de fecha</Typography>
                     
                     <DatePicker
                       enableAccessibleFieldDOMStructure={false}
@@ -253,12 +243,12 @@ const ActiveLoanList = () => {
                           <TextField
                             {...params}
                             sx={inputSx}
+                            size="small"
                             onClick={() => setStartDateOpen(true)}
                             onKeyDown={(e) => e.preventDefault()}
                             inputProps={{
                               ...params.inputProps,
                               value: startDate ? startDate.format("DD/MM/YYYY") : "",
-                              placeholder: "",
                               readOnly: true
                             }}
                           />
@@ -287,12 +277,12 @@ const ActiveLoanList = () => {
                           <TextField
                             {...params}
                             sx={inputSx}
+                            size="small"
                             onClick={() => setEndDateOpen(true)}
                             onKeyDown={(e) => e.preventDefault()}
                             inputProps={{
                               ...params.inputProps,
                               value: endDate ? endDate.format("DD/MM/YYYY") : "",
-                              placeholder: "",
                               readOnly: true
                             }}
                           />
@@ -301,56 +291,62 @@ const ActiveLoanList = () => {
                       slotProps={{ popper: { sx: popperSx } }}
                     />
 
-                    <Tooltip title="Filtrar resultados por el rango de fechas seleccionado" arrow placement="top">
+                    <Tooltip title="Filtrar resultados por el rango seleccionado" arrow placement="top">
                       <span>
                         <Button 
                             variant="contained" ref={filterBtnRef} onClick={fetchLoansByDate}
-                            startIcon={<FilterAltIcon />} sx={cyanButtonStyle} disabled={!startDate || !endDate || loading}
+                            startIcon={<FilterAltIcon />} sx={skyButtonStyle} disabled={!startDate || !endDate || loading}
                         >
-                            Filtrar Rango
+                            Filtrar
                         </Button>
                       </span>
                     </Tooltip>
                 </Box>
 
-                <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(148, 163, 184, 0.1)' }} />
 
-                <Tooltip title="Quitar filtros y mostrar todos los préstamos activos" arrow placement="top">
-                  <Button 
-                      onClick={resetFilters} startIcon={<DeleteSweepIcon />}
-                      sx={{ ml: 'auto', color: '#ff1744', fontWeight: 'bold', border: '1px dashed #ff1744', "&:hover": { bgcolor: 'rgba(255,23,68,0.1)' }, "&:focus": { outline: "none" }, "&:focusVisible": { outline: "none" } }}
-                  >
-                      Limpiar Filtros
-                  </Button>
-                </Tooltip>
+                <Button 
+                    onClick={resetFilters} startIcon={<DeleteSweepIcon />}
+                    sx={{ ml: 'auto', color: '#f87171', fontWeight: 600, textTransform: 'none', border: '1px dashed rgba(248, 113, 113, 0.3)', px: 2, "&:hover": { bgcolor: 'rgba(248, 113, 113, 0.08)', borderColor: '#f87171' }, "&:focus": { outline: "none" } }}
+                >
+                    Limpiar Filtros
+                </Button>
             </Box>
         </Box>
 
-        <TableContainer component={Paper} sx={{ bgcolor: '#1d0b3b', borderRadius: 2, border: "1px solid rgba(0, 210, 255, 0.3)" }}>
+        <TableContainer component={Paper} sx={{ bgcolor: '#1e293b', borderRadius: 2, border: "1px solid rgba(148, 163, 184, 0.1)", boxShadow: "0 4px 24px rgba(0, 0, 0, 0.35)" }}>
           <Table>
-            <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
+            <TableHead sx={{ backgroundColor: 'rgba(15, 23, 42, 0.8)' }}>
               <TableRow>
-                <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold' }}>ID</TableCell>
-                <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold' }}>Herramienta</TableCell>
-                <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold' }}>Cliente (ID)</TableCell>
-                <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold' }}>Inicio</TableCell>
-                <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold' }}>Fecha límite</TableCell>
-                <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold' }}>Estado</TableCell>
-                <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold' }}>Acción</TableCell>
+                {["ID", "Herramienta", "Cliente (ID)", "Inicio", "Fecha límite", "Estado", "Acción"].map(head => (
+                  <TableCell key={head} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>{head}</TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {loans.map(loan => (
-                <TableRow key={loan.id} sx={{ '&:hover': { backgroundColor: 'rgba(232, 28, 255, 0.05)' }, '& td': { color: '#f1f5f9', borderBottom: '1px solid rgba(255,255,255,0.05)' } }}>
+                <TableRow key={loan.id} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148,163,184,0.07)' } }}>
                   <TableCell>{loan.id}</TableCell>
-                  <TableCell>{loan.tool?.name}</TableCell>
+                  <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{loan.tool?.name}</TableCell>
                   <TableCell>{loan.client?.id}</TableCell>
                   <TableCell>{formatDate(loan.startDate)}</TableCell>
                   <TableCell>{formatDate(loan.scheduledReturnDate)}</TableCell>
-                  <TableCell sx={{ color: '#e81cff', fontWeight: 'bold' }}>{loan.loanStatus}</TableCell>
                   <TableCell>
-                    <Tooltip title="Registrar entrega de la herramienta y calcular cobros" arrow placement="left">
-                      <Button variant="contained" sx={cyanButtonStyle} onClick={() => handleOpenDialog(loan)}>
+                    <Chip 
+                      label={loan.loanStatus} 
+                      size="small"
+                      sx={{ 
+                        backgroundColor: loan.loanStatus === 'ATRASADO' ? 'rgba(248, 113, 113, 0.1)' : 'rgba(56, 189, 248, 0.1)',
+                        color: loan.loanStatus === 'ATRASADO' ? '#f87171' : '#38bdf8',
+                        fontWeight: 600,
+                        fontSize: '0.7rem',
+                        border: `1px solid ${loan.loanStatus === 'ATRASADO' ? 'rgba(248, 113, 113, 0.2)' : 'rgba(56, 189, 248, 0.2)'}`
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title="Procesar retorno físico" arrow placement="left">
+                      <Button variant="contained" sx={skyButtonStyle} size="small" onClick={() => handleOpenDialog(loan)}>
                         Devolver
                       </Button>
                     </Tooltip>
@@ -359,8 +355,8 @@ const ActiveLoanList = () => {
               ))}
               {!loading && loans.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ color: "#b392f0", py: 4 }}>
-                    No se encontraron préstamos activos.
+                  <TableCell colSpan={7} align="center" sx={{ color: "#64748b", py: 8 }}>
+                    No se encontraron préstamos activos en este momento.
                   </TableCell>
                 </TableRow>
               )}
@@ -368,77 +364,71 @@ const ActiveLoanList = () => {
           </Table>
         </TableContainer>
 
-        <Dialog open={openDialog} onClose={handleCloseDialog} PaperProps={{ sx: { bgcolor: '#1d0b3b', border: '1px solid #e81cff', color: 'white' } }}>
-          <DialogTitle sx={{ color: '#00d2ff', display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Dialog open={openDialog} onClose={handleCloseDialog} PaperProps={{ sx: { bgcolor: '#1e293b', border: '1px solid rgba(148, 163, 184, 0.2)', color: '#e2e8f0', boxShadow: '0 24px 48px rgba(0,0,0,0.5)' } }}>
+          <DialogTitle sx={{ color: '#38bdf8', borderBottom: '1px solid rgba(148, 163, 184, 0.1)', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
             Devolver Herramienta
-            <Tooltip title="Seleccione si la herramienta presenta daños para aplicar los cobros de reparación o reposición correspondientes." arrow placement="right">
-              <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help" }} />
-            </Tooltip>
+            <HelpOutlineIcon sx={{ color: "#94a3b8", fontSize: "1.2rem" }} />
           </DialogTitle>
           <DialogContent>
-            <Box display="flex" flexDirection="column" gap={1}>
+            <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Typography variant="body2" sx={{ color: '#94a3b8', mb: 1 }}>Marque las condiciones de entrega:</Typography>
               <FormControlLabel 
-                control={<Checkbox sx={{ color: '#e81cff', '&.Mui-checked': { color: '#e81cff' } }} checked={damaged} onChange={(e) => setDamaged(e.target.checked)} />} 
-                label={
-                  <Box display="flex" alignItems="center" gap={1}>
-                    Herramienta dañada
-                    {damaged && (
-                      <Tooltip title="Se sumará el costo de reparación definido para esta herramienta." arrow placement="right">
-                        <HelpOutlineIcon sx={{ color: "#b392f0", fontSize: "1rem" }} />
-                      </Tooltip>
-                    )}
-                  </Box>
-                } 
+                control={<Checkbox sx={{ color: '#475569', '&.Mui-checked': { color: '#38bdf8' } }} checked={damaged} onChange={(e) => setDamaged(e.target.checked)} />} 
+                label="La herramienta presenta daños" 
               />
               <FormControlLabel 
-                control={<Checkbox sx={{ color: '#e81cff', '&.Mui-checked': { color: '#e81cff' } }} checked={irreparable} onChange={(e) => setIrreparable(e.target.checked)} disabled={!damaged} />} 
-                label={
-                  <Box display="flex" alignItems="center" gap={1}>
-                    Daño irreparable
-                    {irreparable && (
-                      <Tooltip title="Se cobrará el valor total de reposición de la herramienta." arrow placement="right">
-                        <HelpOutlineIcon sx={{ color: "#b392f0", fontSize: "1rem" }} />
-                      </Tooltip>
-                    )}
-                  </Box>
-                } 
+                control={<Checkbox sx={{ color: '#475569', '&.Mui-checked': { color: '#f87171' } }} checked={irreparable} onChange={(e) => setIrreparable(e.target.checked)} disabled={!damaged} />} 
+                label={<Typography sx={{ color: !damaged ? '#475569' : '#e2e8f0' }}>El daño es irreparable (reposición total)</Typography>}
               />
             </Box>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog} sx={{ color: '#b392f0', "&:focus": { outline: "none" } }}>Cancelar</Button>
-            <Button variant="contained" sx={cyanButtonStyle} onClick={handleReturn}>Confirmar devolución</Button>
+          <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(148, 163, 184, 0.1)' }}>
+            <Button onClick={handleCloseDialog} sx={{ color: '#94a3b8', textTransform: 'none', fontWeight: 600 }}>Cancelar</Button>
+            <Button variant="contained" sx={skyButtonStyle} onClick={handleReturn}>Confirmar devolución</Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog open={openReceiptDialog} onClose={() => setOpenReceiptDialog(false)} PaperProps={{ sx: { bgcolor: '#1d0b3b', border: '2px solid #00d2ff', color: 'white', p: 2 } }}>
-          <DialogTitle sx={{ color: '#00d2ff', textAlign: 'center', fontWeight: 'bold' }}>Boleta de Devolución</DialogTitle>
+        <Dialog open={openReceiptDialog} onClose={() => setOpenReceiptDialog(false)} PaperProps={{ sx: { bgcolor: '#0f172a', border: '1px solid rgba(56, 189, 248, 0.3)', color: '#e2e8f0', p: 1, minWidth: 360 } }}>
+          <DialogTitle sx={{ color: '#38bdf8', textAlign: 'center', fontWeight: 700, letterSpacing: '0.02em' }}>BOLETA DE DEVOLUCIÓN</DialogTitle>
           <DialogContent>
             {loanReceipt && (
-              <Box sx={{ minWidth: "300px", '& p': { mb: 1, borderBottom: '1px solid rgba(255,255,255,0.1)', pb: 0.5 } }}>
-                <p><strong>Cliente:</strong> {loanReceipt.client?.rut}</p>
-                <p><strong>Herramienta:</strong> {loanReceipt.tool?.name}</p>
-                <p><strong>Precio préstamo:</strong> <span style={{ color: '#00d2ff' }}>${loanReceipt.loanPrice || '0'}</span></p>
-                <p><strong>Multa por atraso:</strong> <span style={{ color: '#00d2ff' }}>${loanReceipt.fine || '0'}</span></p>
-                <p><strong>Daño:</strong> <span style={{ color: '#00d2ff' }}>${loanReceipt.damagePrice || '0'}</span></p>
-                <p><strong>Total multa + daño:</strong> <span style={{ color: '#00d2ff', fontWeight: 'bold' }}>${loanReceipt.fineTotal || '0'}</span></p>
-                <Typography variant="h6" sx={{ textAlign: 'right', mt: 2, color: '#00d2ff' }}>Total a pagar: ${loanReceipt.total || '0'}</Typography>
+              <Box sx={{ mt: 1 }}>
+                <Box sx={{ '& p': { mb: 1.5, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(148, 163, 184, 0.1)', pb: 1 } }}>
+                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>Cliente:</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{loanReceipt.client?.rut}</Typography>
+                </Box>
+                <Box sx={{ '& p': { mb: 1.5, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(148, 163, 184, 0.1)', pb: 1 } }}>
+                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>Herramienta:</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{loanReceipt.tool?.name}</Typography>
+                </Box>
+                <Box sx={{ '& p': { mb: 1.5, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(148, 163, 184, 0.1)', pb: 1 } }}>
+                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>Tarifa Préstamo:</Typography>
+                  <Typography variant="body2" sx={{ color: '#38bdf8' }}>${loanReceipt.loanPrice || '0'}</Typography>
+                </Box>
+                <Box sx={{ '& p': { mb: 1.5, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(148, 163, 184, 0.1)', pb: 1 } }}>
+                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>Multa por Atraso:</Typography>
+                  <Typography variant="body2" sx={{ color: loanReceipt.fine > 0 ? '#f87171' : '#e2e8f0' }}>${loanReceipt.fine || '0'}</Typography>
+                </Box>
+                <Box sx={{ '& p': { mb: 1.5, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(148, 163, 184, 0.1)', pb: 1 } }}>
+                  <Typography variant="body2" sx={{ color: '#94a3b8' }}>Recargo por Daño:</Typography>
+                  <Typography variant="body2" sx={{ color: loanReceipt.damagePrice > 0 ? '#f87171' : '#e2e8f0' }}>${loanReceipt.damagePrice || '0'}</Typography>
+                </Box>
+                
+                <Typography variant="h5" sx={{ textAlign: 'right', mt: 3, mb: 3, color: '#38bdf8', fontWeight: 700 }}>
+                  Total a pagar: ${loanReceipt.total || '0'}
+                </Typography>
+
                 {loanReceipt.fineTotal > 0 ? (
-                  <Box display="flex" flexDirection="column" alignItems="center" mt={3} sx={{ p: 2, bgcolor: 'rgba(232, 28, 255, 0.05)', borderRadius: 2 }}>
-                    <Box display="flex" alignItems="center" gap={1} mb={2}>
-                      <Typography sx={{ color: '#b392f0' }}>¿Pagó la multa?</Typography>
-                      <Tooltip title="Confirme si el cliente ha pagado los recargos adicionales generados por atraso o daños" arrow placement="top">
-                        <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1rem", cursor: "help" }} />
-                      </Tooltip>
-                    </Box>
+                  <Box sx={{ p: 2, bgcolor: 'rgba(15, 23, 42, 0.8)', borderRadius: 2, border: '1px solid rgba(56, 189, 248, 0.1)' }}>
+                    <Typography variant="subtitle2" sx={{ color: '#e2e8f0', mb: 2, textAlign: 'center', fontWeight: 600 }}>¿Se liquidó la deuda en este momento?</Typography>
                     <Box display="flex" gap={2}>
-                      <Button sx={cyanButtonStyle} variant="contained" onClick={() => handleFinePaid(true)}>Sí, pagó</Button>
-                      <Button variant="contained" sx={{ bgcolor: 'rgba(255, 23, 68, 0.1)', border: '1px solid #ff1744', color: '#ff1744', '&:hover': { bgcolor: '#ff1744', color: 'white' }, "&:focus": { outline: "none" } }} onClick={() => handleFinePaid(false)}>No pagó</Button>
+                      <Button fullWidth sx={{ ...skyButtonStyle, bgcolor: 'rgba(56, 189, 248, 0.1)' }} variant="contained" onClick={() => handleFinePaid(true)}>Sí, pagó</Button>
+                      <Button fullWidth variant="contained" sx={{ bgcolor: 'rgba(248, 113, 113, 0.05)', border: '1px solid rgba(248, 113, 113, 0.2)', color: '#f87171', textTransform: 'none', fontWeight: 600, '&:hover': { bgcolor: 'rgba(248, 113, 113, 0.15)', borderColor: '#f87171' } }} onClick={() => handleFinePaid(false)}>Pendiente</Button>
                     </Box>
                   </Box>
                 ) : (
-                  <Box display="flex" justifyContent="center" mt={3}>
-                    <Button variant="contained" sx={cyanButtonStyle} onClick={() => { setOpenReceiptDialog(false); setSelectedLoan(null); fetchAllLoans(); }}>Cerrar</Button>
+                  <Box display="flex" justifyContent="center" mt={2}>
+                    <Button variant="contained" sx={{ ...skyButtonStyle, width: '100%', py: 1.2 }} onClick={() => { setOpenReceiptDialog(false); setSelectedLoan(null); fetchAllLoans(); }}>Cerrar Boleta</Button>
                   </Box>
                 )}
               </Box>
