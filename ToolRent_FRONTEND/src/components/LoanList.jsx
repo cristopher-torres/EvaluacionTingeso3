@@ -11,6 +11,9 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Tooltip from "@mui/material/Tooltip";
+
+import PageHelp from "../components/PageHelp";
 
 const LoanList = () => {
   const [loans, setLoans] = useState([]);
@@ -36,6 +39,15 @@ const LoanList = () => {
     return `${day}/${month}/${year}`;
   };
 
+  const tableHeaders = [
+    { label: "ID", tooltip: "Identificador único del registro de préstamo" },
+    { label: "Herramienta", tooltip: "Identificador de la herramienta prestada" },
+    { label: "Cliente", tooltip: "Identificador del usuario que solicitó el préstamo" },
+    { label: "Inicio", tooltip: "Fecha en que se inició el préstamo" },
+    { label: "Fecha límite", tooltip: "Fecha programada para la devolución" },
+    { label: "Devuelto", tooltip: "Indica si la herramienta ya fue retornada al inventario" }
+  ];
+
   return (
     <Box sx={{ 
       p: 3, 
@@ -45,7 +57,6 @@ const LoanList = () => {
       flexDirection: 'column'
     }}>
       
-      {/* INDICADOR DE CARGA GLOBAL (Heurística #1) */}
       <Backdrop
         sx={{ 
           color: '#00d2ff', 
@@ -63,17 +74,26 @@ const LoanList = () => {
         </Typography>
       </Backdrop>
 
-      <Typography 
-        variant="h4" 
-        sx={{ 
-          color: "#00d2ff", 
-          mb: 3, 
-          fontWeight: "bold",
-          textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" 
-        }}
-      >
-        Listado de Préstamos
-      </Typography>
+      <Box display="flex" alignItems="center" gap={1} mb={3}>
+        <Typography 
+          variant="h4" 
+          sx={{ 
+            color: "#00d2ff", 
+            fontWeight: "bold",
+            textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" 
+          }}
+        >
+          Listado de Préstamos
+        </Typography>
+        <PageHelp 
+          title="Historial General" 
+          steps={[
+            "Esta vista muestra el registro histórico de todos los préstamos.",
+            "Incluye tanto los préstamos que están en curso como los ya finalizados.",
+            "Pase el cursor sobre los encabezados de la tabla para ver más detalles de cada columna."
+          ]} 
+        />
+      </Box>
 
       <TableContainer 
         component={Paper} 
@@ -87,16 +107,18 @@ const LoanList = () => {
         <Table>
           <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
             <TableRow>
-              {["ID", "Herramienta", "Cliente", "Inicio", "Fecha límite", "Devuelto"].map((head) => (
+              {tableHeaders.map((header) => (
                 <TableCell 
-                  key={head} 
+                  key={header.label} 
                   sx={{ 
                     color: '#00d2ff', 
                     fontWeight: 'bold', 
                     borderBottom: '2px solid #e81cff' 
                   }}
                 >
-                  {head}
+                  <Tooltip title={header.tooltip} arrow placement="top">
+                    <span style={{ cursor: 'help' }}>{header.label}</span>
+                  </Tooltip>
                 </TableCell>
               ))}
             </TableRow>

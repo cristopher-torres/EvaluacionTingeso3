@@ -20,6 +20,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import Tooltip from "@mui/material/Tooltip";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+
+import PageHelp from "../components/PageHelp";
 
 const UnpaidLoansPage = () => {
   const [loans, setLoans] = useState([]);
@@ -131,6 +135,16 @@ const UnpaidLoansPage = () => {
     "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
   };
 
+  const tableHeaders = [
+    { label: "ID Préstamo", tooltip: "Identificador único del préstamo asociado a la multa" },
+    { label: "ID Usuario", tooltip: "Identificador interno del cliente en el sistema" },
+    { label: "RUT", tooltip: "Rol Único Tributario del cliente" },
+    { label: "Email", tooltip: "Correo electrónico de contacto" },
+    { label: "Teléfono", tooltip: "Número de teléfono de contacto" },
+    { label: "Deuda", tooltip: "Monto total pendiente originado por atrasos o daños" },
+    { label: "Acción", tooltip: "Registrar el pago para regularizar al cliente" }
+  ];
+
   return (
     <Box sx={{ p: 3, bgcolor: '#100524', minHeight: '100vh' }}>
       
@@ -144,9 +158,20 @@ const UnpaidLoansPage = () => {
         </Typography>
       </Backdrop>
 
-      <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", mb: 4, textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
-        Préstamos con Multas No Pagadas
-      </Typography>
+      <Box display="flex" alignItems="center" gap={1} mb={4}>
+        <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
+          Préstamos con Multas No Pagadas
+        </Typography>
+        <PageHelp 
+          title="Gestión de Deudas" 
+          steps={[
+            "Muestra los préstamos que ya fueron devueltos pero mantienen un saldo pendiente por pagar.",
+            "Busque rápidamente al cliente ingresando su RUT.",
+            "Utilice el botón 'Marcar Pago' una vez que el cliente haya saldado la deuda.",
+            "Recuerde que los clientes con multas impagas se encuentran restringidos."
+          ]} 
+        />
+      </Box>
 
       <Box sx={{ mb: 4, p: 2, bgcolor: '#1d0b3b', borderRadius: 2, border: '1px solid rgba(232, 28, 255, 0.2)' }}>
         <TextField 
@@ -158,6 +183,13 @@ const UnpaidLoansPage = () => {
           value={rutFilter} 
           onChange={(e) => setRutFilter(e.target.value)} 
           placeholder="Ej: 12.345.678-9"
+          InputProps={{
+            endAdornment: (
+              <Tooltip title="Filtre los registros escribiendo el RUT del cliente" arrow placement="top">
+                <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help", ml: 1 }} />
+              </Tooltip>
+            )
+          }}
         />
       </Box>
 
@@ -165,8 +197,12 @@ const UnpaidLoansPage = () => {
         <Table>
           <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
             <TableRow>
-              {["ID Préstamo", "ID Usuario", "RUT", "Email", "Teléfono", "Deuda", "Acción"].map((head) => (
-                <TableCell key={head} sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: '2px solid #e81cff' }}>{head}</TableCell>
+              {tableHeaders.map((head) => (
+                <TableCell key={head.label} sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: '2px solid #e81cff' }}>
+                  <Tooltip title={head.tooltip} arrow placement="top">
+                    <span style={{ cursor: 'help' }}>{head.label}</span>
+                  </Tooltip>
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -180,9 +216,13 @@ const UnpaidLoansPage = () => {
                 <TableCell>{loan.client?.phoneNumber}</TableCell>
                 <TableCell sx={{ color: '#e81cff', fontWeight: 'bold' }}>${loan.fineTotal}</TableCell>
                 <TableCell>
-                  <Button variant="contained" sx={payButtonStyle} onClick={() => handleOpenConfirmDialog(loan)} disabled={loading}>
-                    Marcar Pago
-                  </Button>
+                  <Tooltip title="Confirmar que el cliente realizó el pago de esta multa" arrow placement="left">
+                    <span>
+                      <Button variant="contained" sx={payButtonStyle} onClick={() => handleOpenConfirmDialog(loan)} disabled={loading}>
+                        Marcar Pago
+                      </Button>
+                    </span>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}

@@ -23,11 +23,15 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import Divider from '@mui/material/Divider';
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Tooltip from "@mui/material/Tooltip";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/es';
+
+import PageHelp from "../components/PageHelp";
 
 const ActiveLoanList = () => {
   const [loans, setLoans] = useState([]);
@@ -206,9 +210,19 @@ const ActiveLoanList = () => {
           <Typography variant="h6">{loadingMessage}</Typography>
         </Backdrop>
 
-        <Typography variant="h4" sx={{ color: "#00d2ff", mb: 3, fontWeight: "bold" }}>
-          Préstamos Activos
-        </Typography>
+        <Box display="flex" alignItems="center" gap={1} mb={3}>
+          <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold" }}>
+            Préstamos Activos
+          </Typography>
+          <PageHelp 
+            title="Gestión de Devoluciones" 
+            steps={[
+              "Utilice los filtros de fecha para buscar préstamos específicos.",
+              "Haga clic en 'Devolver' para procesar el retorno de una herramienta.",
+              "Si la herramienta fue dañada, seleccione las casillas correspondientes durante la devolución para calcular las multas."
+            ]} 
+          />
+        </Box>
 
         <Box sx={{ p: 3, mb: 3, bgcolor: '#1d0b3b', borderRadius: 2, border: '1px solid rgba(232, 28, 255, 0.2)', display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
@@ -287,22 +301,28 @@ const ActiveLoanList = () => {
                       slotProps={{ popper: { sx: popperSx } }}
                     />
 
-                    <Button 
-                        variant="contained" ref={filterBtnRef} onClick={fetchLoansByDate}
-                        startIcon={<FilterAltIcon />} sx={cyanButtonStyle} disabled={!startDate || !endDate || loading}
-                    >
-                        Filtrar Rango
-                    </Button>
+                    <Tooltip title="Filtrar resultados por el rango de fechas seleccionado" arrow placement="top">
+                      <span>
+                        <Button 
+                            variant="contained" ref={filterBtnRef} onClick={fetchLoansByDate}
+                            startIcon={<FilterAltIcon />} sx={cyanButtonStyle} disabled={!startDate || !endDate || loading}
+                        >
+                            Filtrar Rango
+                        </Button>
+                      </span>
+                    </Tooltip>
                 </Box>
 
                 <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
 
-                <Button 
-                    onClick={resetFilters} startIcon={<DeleteSweepIcon />}
-                    sx={{ ml: 'auto', color: '#ff1744', fontWeight: 'bold', border: '1px dashed #ff1744', "&:hover": { bgcolor: 'rgba(255,23,68,0.1)' }, "&:focus": { outline: "none" }, "&:focusVisible": { outline: "none" } }}
-                >
-                    Limpiar Filtros
-                </Button>
+                <Tooltip title="Quitar filtros y mostrar todos los préstamos activos" arrow placement="top">
+                  <Button 
+                      onClick={resetFilters} startIcon={<DeleteSweepIcon />}
+                      sx={{ ml: 'auto', color: '#ff1744', fontWeight: 'bold', border: '1px dashed #ff1744', "&:hover": { bgcolor: 'rgba(255,23,68,0.1)' }, "&:focus": { outline: "none" }, "&:focusVisible": { outline: "none" } }}
+                  >
+                      Limpiar Filtros
+                  </Button>
+                </Tooltip>
             </Box>
         </Box>
 
@@ -329,9 +349,11 @@ const ActiveLoanList = () => {
                   <TableCell>{formatDate(loan.scheduledReturnDate)}</TableCell>
                   <TableCell sx={{ color: '#e81cff', fontWeight: 'bold' }}>{loan.loanStatus}</TableCell>
                   <TableCell>
-                    <Button variant="contained" sx={cyanButtonStyle} onClick={() => handleOpenDialog(loan)}>
-                      Devolver
-                    </Button>
+                    <Tooltip title="Registrar entrega de la herramienta y calcular cobros" arrow placement="left">
+                      <Button variant="contained" sx={cyanButtonStyle} onClick={() => handleOpenDialog(loan)}>
+                        Devolver
+                      </Button>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
@@ -347,10 +369,41 @@ const ActiveLoanList = () => {
         </TableContainer>
 
         <Dialog open={openDialog} onClose={handleCloseDialog} PaperProps={{ sx: { bgcolor: '#1d0b3b', border: '1px solid #e81cff', color: 'white' } }}>
-          <DialogTitle sx={{ color: '#00d2ff' }}>Devolver Herramienta</DialogTitle>
+          <DialogTitle sx={{ color: '#00d2ff', display: 'flex', alignItems: 'center', gap: 1 }}>
+            Devolver Herramienta
+            <Tooltip title="Seleccione si la herramienta presenta daños para aplicar los cobros de reparación o reposición correspondientes." arrow placement="right">
+              <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help" }} />
+            </Tooltip>
+          </DialogTitle>
           <DialogContent>
-            <FormControlLabel control={<Checkbox sx={{ color: '#e81cff', '&.Mui-checked': { color: '#e81cff' } }} checked={damaged} onChange={(e) => setDamaged(e.target.checked)} />} label="Herramienta dañada" />
-            <FormControlLabel control={<Checkbox sx={{ color: '#e81cff', '&.Mui-checked': { color: '#e81cff' } }} checked={irreparable} onChange={(e) => setIrreparable(e.target.checked)} disabled={!damaged} />} label="Daño irreparable" />
+            <Box display="flex" flexDirection="column" gap={1}>
+              <FormControlLabel 
+                control={<Checkbox sx={{ color: '#e81cff', '&.Mui-checked': { color: '#e81cff' } }} checked={damaged} onChange={(e) => setDamaged(e.target.checked)} />} 
+                label={
+                  <Box display="flex" alignItems="center" gap={1}>
+                    Herramienta dañada
+                    {damaged && (
+                      <Tooltip title="Se sumará el costo de reparación definido para esta herramienta." arrow placement="right">
+                        <HelpOutlineIcon sx={{ color: "#b392f0", fontSize: "1rem" }} />
+                      </Tooltip>
+                    )}
+                  </Box>
+                } 
+              />
+              <FormControlLabel 
+                control={<Checkbox sx={{ color: '#e81cff', '&.Mui-checked': { color: '#e81cff' } }} checked={irreparable} onChange={(e) => setIrreparable(e.target.checked)} disabled={!damaged} />} 
+                label={
+                  <Box display="flex" alignItems="center" gap={1}>
+                    Daño irreparable
+                    {irreparable && (
+                      <Tooltip title="Se cobrará el valor total de reposición de la herramienta." arrow placement="right">
+                        <HelpOutlineIcon sx={{ color: "#b392f0", fontSize: "1rem" }} />
+                      </Tooltip>
+                    )}
+                  </Box>
+                } 
+              />
+            </Box>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} sx={{ color: '#b392f0', "&:focus": { outline: "none" } }}>Cancelar</Button>
@@ -372,7 +425,12 @@ const ActiveLoanList = () => {
                 <Typography variant="h6" sx={{ textAlign: 'right', mt: 2, color: '#00d2ff' }}>Total a pagar: ${loanReceipt.total || '0'}</Typography>
                 {loanReceipt.fineTotal > 0 ? (
                   <Box display="flex" flexDirection="column" alignItems="center" mt={3} sx={{ p: 2, bgcolor: 'rgba(232, 28, 255, 0.05)', borderRadius: 2 }}>
-                    <Typography sx={{ color: '#b392f0', mb: 2 }}>¿Pagó la multa?</Typography>
+                    <Box display="flex" alignItems="center" gap={1} mb={2}>
+                      <Typography sx={{ color: '#b392f0' }}>¿Pagó la multa?</Typography>
+                      <Tooltip title="Confirme si el cliente ha pagado los recargos adicionales generados por atraso o daños" arrow placement="top">
+                        <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1rem", cursor: "help" }} />
+                      </Tooltip>
+                    </Box>
                     <Box display="flex" gap={2}>
                       <Button sx={cyanButtonStyle} variant="contained" onClick={() => handleFinePaid(true)}>Sí, pagó</Button>
                       <Button variant="contained" sx={{ bgcolor: 'rgba(255, 23, 68, 0.1)', border: '1px solid #ff1744', color: '#ff1744', '&:hover': { bgcolor: '#ff1744', color: 'white' }, "&:focus": { outline: "none" } }} onClick={() => handleFinePaid(false)}>No pagó</Button>

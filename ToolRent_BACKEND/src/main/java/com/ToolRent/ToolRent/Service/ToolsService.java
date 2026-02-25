@@ -159,14 +159,21 @@ public class ToolsService {
     }
 
     public ToolsEntity updateTool(Long toolId, ToolsEntity toolDetails, String rut) {
-        // Obtener la herramienta existente
+        // 1. Obtener la herramienta existente
         ToolsEntity tool = toolsRepository.findById(toolId)
                 .orElseThrow(() -> new RuntimeException("Herramienta no encontrada"));
 
         // Guardar el estado anterior
         ToolStatus oldStatus = tool.getStatus();
 
+        // 2. Comprobar si algún precio fue modificado
+        boolean preciosCambiaron =
+                Double.compare(tool.getReplacementValue(), toolDetails.getReplacementValue()) != 0 ||
+                        Double.compare(tool.getDailyRate(), toolDetails.getDailyRate()) != 0 ||
+                        Double.compare(tool.getDailyLateRate(), toolDetails.getDailyLateRate()) != 0 ||
+                        Double.compare(tool.getRepairValue(), toolDetails.getRepairValue()) != 0;
 
+        // 3. Actualizar la herramienta principal
         tool.setName(toolDetails.getName());
         tool.setCategory(toolDetails.getCategory());
         tool.setReplacementValue(toolDetails.getReplacementValue());
@@ -174,11 +181,29 @@ public class ToolsService {
         tool.setDailyLateRate(toolDetails.getDailyLateRate());
         tool.setRepairValue(toolDetails.getRepairValue());
         tool.setStatus(toolDetails.getStatus());
-        // El stock lo dejas como está o actualízalo si corresponde
-
         ToolsEntity updatedTool = toolsRepository.save(tool);
 
-        // Crear movimiento en Kardex si el estado cambió a EN_REPARACION
+        // 4. Si los precios cambiaron, modificar todas las demás herramientas con el mismo nombre y categoría
+        if (preciosCambiaron) {
+            // Obtenemos todas las herramientas
+            List<ToolsEntity> herramientasSimilares = toolsRepository.findByNameAndCategory(
+                    toolDetails.getName(),
+                    toolDetails.getCategory()
+            );
+
+            // Actualizamos los precios de cada una
+            for (ToolsEntity h : herramientasSimilares) {
+                if (!h.getId().equals(toolId)) {
+                    h.setReplacementValue(toolDetails.getReplacementValue());
+                    h.setDailyRate(toolDetails.getDailyRate());
+                    h.setDailyLateRate(toolDetails.getDailyLateRate());
+                    h.setRepairValue(toolDetails.getRepairValue());
+                }
+            }
+            toolsRepository.saveAll(herramientasSimilares);
+        }
+
+        // 5. Crear movimiento en Kardex si el estado cambió a EN_REPARACION
         if (oldStatus != tool.getStatus() && tool.getStatus() == ToolStatus.EN_REPARACION) {
             KardexEntity reparacion = new KardexEntity();
             reparacion.setTool(updatedTool);
@@ -190,7 +215,7 @@ public class ToolsService {
             kardexService.save(reparacion);
         }
 
-        // Crear movimiento en Kardex si el estado cambió a DADA_DE_BAJA
+        // 6. Crear movimiento en Kardex si el estado cambió a DADA_DE_BAJA
         if (oldStatus != tool.getStatus() && tool.getStatus() == ToolStatus.DADA_DE_BAJA) {
             KardexEntity baja = new KardexEntity();
             baja.setTool(updatedTool);

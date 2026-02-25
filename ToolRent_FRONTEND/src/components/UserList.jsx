@@ -14,6 +14,9 @@ import Typography from "@mui/material/Typography";
 import EditIcon from "@mui/icons-material/Edit";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Tooltip from "@mui/material/Tooltip";
+
+import PageHelp from "../components/PageHelp";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
@@ -47,6 +50,18 @@ const UserList = () => {
     }
   };
 
+  const tableHeaders = [
+    { label: "ID", tooltip: "Identificador interno del usuario" },
+    { label: "Rut", tooltip: "Documento de Identidad" },
+    { label: "Username", tooltip: "Nombre de usuario en la pagina" },
+    { label: "Nombre", tooltip: "Nombre del usuario real" },
+    { label: "Apellido", tooltip: "Apellidos del usuario" },
+    { label: "Email", tooltip: "Correo electrónico de contacto" },
+    { label: "Número de teléfono", tooltip: "Teléfono móvil registrado" },
+    { label: "Estado", tooltip: "Indica si el usuario está ACTIVO o RESTRINGIDO (ej. por multas)" },
+    { label: "Acciones", tooltip: "Opciones disponibles para gestionar el usuario" }
+  ];
+
   return (
     <Box sx={{ 
       p: 3, 
@@ -56,7 +71,6 @@ const UserList = () => {
       flexDirection: 'column'
     }}>
       
-      {/* INDICADOR DE CARGA GLOBAL */}
       <Backdrop
         sx={{ 
           color: '#00d2ff', 
@@ -74,9 +88,19 @@ const UserList = () => {
         </Typography>
       </Backdrop>
 
-      <Typography variant="h4" sx={{ color: "#00d2ff", mb: 3, fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
-        Listado de Usuarios
-      </Typography>
+      <Box display="flex" alignItems="center" gap={1} mb={3}>
+        <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
+          Listado de Usuarios
+        </Typography>
+        <PageHelp 
+          title="Directorio de Clientes" 
+          steps={[
+            "Visualice la lista completa de todos los clientes registrados.",
+            "Compruebe rápidamente el estado (ACTIVO/RESTRINGIDO) de cada cuenta.",
+            "Use el botón 'Editar' para actualizar la información de contacto o corregir datos de un usuario específico."
+          ]} 
+        />
+      </Box>
 
       <TableContainer 
         component={Paper} 
@@ -90,9 +114,11 @@ const UserList = () => {
         <Table>
           <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
             <TableRow>
-              {["ID", "Rut", "Username", "Nombre", "Apellido", "Email", "Número de teléfono", "Estado", "Acciones"].map((head) => (
-                <TableCell key={head} sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: "2px solid #e81cff" }}>
-                  {head}
+              {tableHeaders.map((head) => (
+                <TableCell key={head.label} sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: "2px solid #e81cff" }}>
+                  <Tooltip title={head.tooltip} arrow placement="top">
+                    <span style={{ cursor: 'help' }}>{head.label}</span>
+                  </Tooltip>
                 </TableCell>
               ))}
             </TableRow>
@@ -117,18 +143,22 @@ const UserList = () => {
                   color: user.status === 'ACTIVO' ? '#00ff88' : '#e81cff', 
                   fontWeight: 'bold' 
                 }}>
-                  {user.status}
+                  <Tooltip title={user.status === 'ACTIVO' ? 'Usuario habilitado para realizar préstamos' : 'Usuario bloqueado temporalmente (posiblemente por multas impagas)'} arrow placement="left">
+                    <span>{user.status}</span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<EditIcon />}
-                    sx={actionButtonStyle}
-                    onClick={() => navigate(`/users/edit/${user.id}`)}
-                  >
-                    Editar
-                  </Button>
+                  <Tooltip title="Modificar los datos personales de este usuario" arrow placement="left">
+                    <Button
+                      variant="contained"
+                      size="small"
+                      startIcon={<EditIcon />}
+                      sx={actionButtonStyle}
+                      onClick={() => navigate(`/users/edit/${user.id}`)}
+                    >
+                      Editar
+                    </Button>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}

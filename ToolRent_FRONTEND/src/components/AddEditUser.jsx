@@ -9,7 +9,10 @@ import Typography from "@mui/material/Typography";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import InputAdornment from "@mui/material/InputAdornment";
-import { Select, MenuItem, Backdrop, CircularProgress } from "@mui/material";
+import { Select, MenuItem, Backdrop, CircularProgress, Tooltip } from "@mui/material";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+
+import PageHelp from "../components/PageHelp";
 
 const AddEditUser = () => {
   const { userId } = useParams();
@@ -22,7 +25,7 @@ const AddEditUser = () => {
   const [username, setUsername] = useState("");
   const [status, setStatus] = useState("ACTIVO");
 
-  const [titleUserForm, setTitleUserForm] = useState("Nuevo Usuario");
+  const [titleUserForm, setTitleUserForm] = useState(userId ? "Editar Usuario" : "Nuevo Usuario");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -53,7 +56,6 @@ const AddEditUser = () => {
   const saveUser = (e) => {
     e.preventDefault();
     
-    // Validación de longitud mínima de RUT (8 o 9 dígitos)
     const rawRut = rut.replace(/[^0-9kK]/g, "");
     if (rawRut.length < 8) {
       setErrorMessage("El RUT debe tener al menos 8 caracteres.");
@@ -114,15 +116,37 @@ const AddEditUser = () => {
       </Backdrop>
 
       <Box component="form" onSubmit={saveUser} sx={{ display: "flex", flexDirection: "column", gap: 2.5, width: "100%", maxWidth: "500px", padding: 4, borderRadius: 3, boxShadow: "0 8px 32px rgba(232, 28, 255, 0.2)", backgroundColor: "#1d0b3b", border: "1px solid rgba(232, 28, 255, 0.4)" }}>
-        <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold", mb: 1 }}>{titleUserForm}</Typography>
+        
+        <Box display="flex" justifyContent="center" alignItems="center" gap={1} mb={1}>
+          <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold" }}>
+            {titleUserForm}
+          </Typography>
+          <PageHelp 
+            title="Registro de Usuario" 
+            steps={[
+              "El RUT debe ser ingresado sin puntos ni guión.",
+              "El número de teléfono debe ser de 8 dígitos.",
+              "Asegúrese de seleccionar el dominio de correo correcto.",
+              "Solo se puede ingresar un numero de teléfono perteneciente a chile.",
+            ]} 
+          />
+        </Box>
 
         <TextField 
           label="RUT" value={rut} 
           onChange={(e) => setRut(formatRut(e.target.value))} 
           onKeyDown={(e) => handleKeyDown(e, nameRef)}
           required sx={inputSx} placeholder="12.345.678-9"
-          helperText={rut.replace(/[^0-9kK]/g, "").length > 0 && rut.replace(/[^0-9kK]/g, "").length < 8 ? "Mínimo 8 dígitos" : ""}
           error={rut.replace(/[^0-9kK]/g, "").length > 0 && rut.replace(/[^0-9kK]/g, "").length < 8}
+          InputProps={{
+            endAdornment: (
+              rut.replace(/[^0-9kK]/g, "").length > 0 && rut.replace(/[^0-9kK]/g, "").length < 8 ? (
+                <Tooltip title="Mínimo 8 dígitos" arrow placement="top">
+                  <HelpOutlineIcon sx={{ color: "#f44336", fontSize: "1.2rem", cursor: "help" }} />
+                </Tooltip>
+              ) : null
+            ),
+          }}
         />
         
         <Box sx={{ display: 'flex', gap: 2 }}>
@@ -164,14 +188,21 @@ const AddEditUser = () => {
                 </Box>
               </InputAdornment>
             ),
+            endAdornment: (
+              <Tooltip title="Ingrese los 8 dígitos restantes de su número" arrow placement="top">
+                <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help" }} />
+              </Tooltip>
+            )
           }}
         />
         
         <TextField label="Nombre de usuario" inputRef={userRef} value={username} onChange={(e) => setUsername(e.target.value)} onKeyDown={(e) => handleKeyDown(e, submitBtnRef)} required sx={inputSx} />
 
-        <Button type="submit" variant="contained" ref={submitBtnRef} disabled={loading} sx={{ mt: 2, backgroundColor: "rgba(0, 210, 255, 0.1)", border: "1px solid #00d2ff", color: "#00d2ff", fontWeight: "bold", py: 1.5, "&:hover": { backgroundColor: "#00d2ff", color: "#100524", boxShadow: "0 0 20px rgba(0, 210, 255, 0.4)" } }} startIcon={<SaveIcon />}>
-          Guardar Usuario
-        </Button>
+        <Tooltip title="Verifique todos los campos antes de guardar">
+          <Button type="submit" variant="contained" ref={submitBtnRef} disabled={loading} sx={{ mt: 2, backgroundColor: "rgba(0, 210, 255, 0.1)", border: "1px solid #00d2ff", color: "#00d2ff", fontWeight: "bold", py: 1.5, "&:hover": { backgroundColor: "#00d2ff", color: "#100524", boxShadow: "0 0 20px rgba(0, 210, 255, 0.4)" } }} startIcon={<SaveIcon />}>
+            Guardar Usuario
+          </Button>
+        </Tooltip>
       </Box>
 
       <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={() => setOpenSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>

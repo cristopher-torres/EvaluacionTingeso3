@@ -10,7 +10,11 @@ import SaveIcon from "@mui/icons-material/Save";
 import Typography from "@mui/material/Typography";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import Tooltip from "@mui/material/Tooltip";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { useKeycloak } from "@react-keycloak/web";
+
+import PageHelp from "../components/PageHelp";
 
 const AddEditTool = () => {
   const [name, setName] = useState("");
@@ -85,7 +89,6 @@ const AddEditTool = () => {
     }
   }, [id]);
 
-  // Estilo común para los inputs neón
   const inputSx = {
     "& .MuiOutlinedInput-root": {
       color: "white",
@@ -96,7 +99,7 @@ const AddEditTool = () => {
     "& .MuiInputLabel-root": { color: "#b392f0" },
     "& .MuiInputLabel-root.Mui-focused": { color: "#00d2ff" },
     "& .MuiSvgIcon-root": { color: "#00d2ff" },
-    "& .MuiSelect-select": { color: "white" }
+    "& .MuiSelect-select": { color: "white", paddingRight: "32px" }
   };
 
   return (
@@ -105,7 +108,7 @@ const AddEditTool = () => {
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      sx={{ backgroundColor: "#100524", p: 2 }} // Fondo morado profundo
+      sx={{ backgroundColor: "#100524", p: 2 }}
     >
       <Box
         component="form"
@@ -119,13 +122,23 @@ const AddEditTool = () => {
           padding: 4,
           borderRadius: 3,
           boxShadow: "0 8px 32px rgba(232, 28, 255, 0.2)",
-          backgroundColor: "#1d0b3b", // Morado de tarjeta
+          backgroundColor: "#1d0b3b",
           border: "1px solid rgba(232, 28, 255, 0.4)",
         }}
       >
-        <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold", mb: 1 }}>
-          {titleToolForm}
-        </Typography>
+        <Box display="flex" justifyContent="center" alignItems="center" gap={1} mb={1}>
+          <Typography variant="h5" align="center" sx={{ color: "#00d2ff", fontWeight: "bold" }}>
+            {titleToolForm}
+          </Typography>
+          <PageHelp 
+            title="Gestión de Inventario" 
+            steps={[
+              "Complete todos los campos requeridos.",
+              "Los valores y tarifas deben ingresarse como números enteros sin puntos ni comas.",
+              "La cantidad inicial solo se puede definir al crear una herramienta nueva."
+            ]} 
+          />
+        </Box>
 
         <FormControl fullWidth>
           <TextField
@@ -178,6 +191,13 @@ const AddEditTool = () => {
               onChange={(e) => setQuantity(e.target.value)}
               required
               sx={inputSx}
+              InputProps={{
+                endAdornment: (
+                  <Tooltip title="Define el stock disponible inicial. No modificable después de crear." arrow placement="top">
+                    <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help", mr: 1 }} />
+                  </Tooltip>
+                ),
+              }}
             />
           </FormControl>
         )}
@@ -191,6 +211,13 @@ const AddEditTool = () => {
                 onChange={(e) => setReplacementValue(e.target.value)}
                 required
                 sx={inputSx}
+                InputProps={{
+                  endAdornment: (
+                    <Tooltip title="Costo a cobrar en caso de pérdida o daño total" arrow placement="top">
+                      <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help" }} />
+                    </Tooltip>
+                  ),
+                }}
             />
             <TextField
                 fullWidth
@@ -199,6 +226,13 @@ const AddEditTool = () => {
                 value={dailyRate}
                 onChange={(e) => setDailyRate(e.target.value)}
                 sx={inputSx}
+                InputProps={{
+                  endAdornment: (
+                    <Tooltip title="Costo base de arriendo por día" arrow placement="top">
+                      <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help" }} />
+                    </Tooltip>
+                  ),
+                }}
             />
         </Box>
 
@@ -210,6 +244,13 @@ const AddEditTool = () => {
                 value={dailyLateRate}
                 onChange={(e) => setDailyLateRate(e.target.value)}
                 sx={inputSx}
+                InputProps={{
+                  endAdornment: (
+                    <Tooltip title="Multa adicional por cada día de retraso en la devolución" arrow placement="top">
+                      <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help" }} />
+                    </Tooltip>
+                  ),
+                }}
             />
             <TextField
                 fullWidth
@@ -218,6 +259,13 @@ const AddEditTool = () => {
                 value={repairValue}
                 onChange={(e) => setRepairValue(e.target.value)}
                 sx={inputSx}
+                InputProps={{
+                  endAdornment: (
+                    <Tooltip title="Costo fijo o estimado por reparaciones menores" arrow placement="top">
+                      <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", cursor: "help" }} />
+                    </Tooltip>
+                  ),
+                }}
             />
         </Box>
 
@@ -251,28 +299,30 @@ const AddEditTool = () => {
           </FormControl>
         )}
 
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{
-            mt: 2,
-            backgroundColor: "rgba(0, 210, 255, 0.1)",
-            border: "1px solid #00d2ff",
-            color: "#00d2ff",
-            fontWeight: "bold",
-            py: 1.5,
-            textTransform: "none",
-            fontSize: "1rem",
-            "&:hover": { 
-                backgroundColor: "#00d2ff", 
-                color: "#100524",
-                boxShadow: "0 0 20px rgba(0, 210, 255, 0.6)" 
-            },
-          }}
-          startIcon={<SaveIcon />}
-        >
-          Guardar Cambios
-        </Button>
+        <Tooltip title="Guardar la configuración de esta herramienta en el inventario">
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              mt: 2,
+              backgroundColor: "rgba(0, 210, 255, 0.1)",
+              border: "1px solid #00d2ff",
+              color: "#00d2ff",
+              fontWeight: "bold",
+              py: 1.5,
+              textTransform: "none",
+              fontSize: "1rem",
+              "&:hover": { 
+                  backgroundColor: "#00d2ff", 
+                  color: "#100524",
+                  boxShadow: "0 0 20px rgba(0, 210, 255, 0.6)" 
+              },
+            }}
+            startIcon={<SaveIcon />}
+          >
+            Guardar Cambios
+          </Button>
+        </Tooltip>
 
         <Typography variant="body2" align="center" sx={{ mt: 1 }}>
           <Link to="/inventario" style={{ color: "#b392f0", textDecoration: "none", fontWeight: "bold" }}>

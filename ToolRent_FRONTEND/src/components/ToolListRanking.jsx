@@ -16,11 +16,14 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import Tooltip from "@mui/material/Tooltip";
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/es';
+
+import PageHelp from "../components/PageHelp";
 
 const ToolListRanking = () => {
   const [tools, setTools] = useState([]);
@@ -160,9 +163,19 @@ const ToolListRanking = () => {
           </Typography>
         </Backdrop>
 
-        <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", mb: 4, textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
-          Ranking de Herramientas Más Prestadas
-        </Typography>
+        <Box display="flex" alignItems="center" gap={1} mb={4}>
+          <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
+            Ranking de Herramientas Más Prestadas
+          </Typography>
+          <PageHelp 
+            title="Estadísticas de Préstamos" 
+            steps={[
+              "Muestra las herramientas ordenadas por la cantidad de veces que han sido prestadas.",
+              "Por defecto, muestra el ranking histórico completo.",
+              "Utilice los filtros para ver el ranking dentro de un período específico."
+            ]} 
+          />
+        </Box>
 
         <Box sx={{ p: 3, mb: 3, bgcolor: '#1d0b3b', borderRadius: 2, border: '1px solid rgba(232, 28, 255, 0.2)', display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
@@ -241,22 +254,28 @@ const ToolListRanking = () => {
                 slotProps={{ popper: { sx: popperSx } }}
               />
 
-              <Button 
-                variant="contained" ref={filterBtnRef} onClick={fetchToolsByDate}
-                startIcon={<FilterAltIcon />} sx={cyanButtonStyle} disabled={!startDate || !endDate || loading}
-              >
-                Filtrar Rango
-              </Button>
+              <Tooltip title="Calcular el ranking basándose en las fechas seleccionadas" arrow placement="top">
+                <span>
+                  <Button 
+                    variant="contained" ref={filterBtnRef} onClick={fetchToolsByDate}
+                    startIcon={<FilterAltIcon />} sx={cyanButtonStyle} disabled={!startDate || !endDate || loading}
+                  >
+                    Filtrar Rango
+                  </Button>
+                </span>
+              </Tooltip>
             </Box>
 
             <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
 
-            <Button 
-              onClick={resetFilters} startIcon={<DeleteSweepIcon />}
-              sx={{ ml: 'auto', color: '#ff1744', fontWeight: 'bold', border: '1px dashed #ff1744', "&:hover": { bgcolor: 'rgba(255,23,68,0.1)' }, "&:focus": { outline: "none" }, "&:focusVisible": { outline: "none" } }}
-            >
-              Limpiar Filtros
-            </Button>
+            <Tooltip title="Restablecer fechas y volver al ranking histórico general" arrow placement="top">
+              <Button 
+                onClick={resetFilters} startIcon={<DeleteSweepIcon />}
+                sx={{ ml: 'auto', color: '#ff1744', fontWeight: 'bold', border: '1px dashed #ff1744', "&:hover": { bgcolor: 'rgba(255,23,68,0.1)' }, "&:focus": { outline: "none" }, "&:focusVisible": { outline: "none" } }}
+              >
+                Limpiar Filtros
+              </Button>
+            </Tooltip>
           </Box>
         </Box>
 
@@ -265,10 +284,14 @@ const ToolListRanking = () => {
             <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
               <TableRow>
                 <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: '2px solid #e81cff' }}>
-                  Nombre Herramienta
+                  <Tooltip title="Nombre del modelo o tipo de herramienta" arrow placement="top">
+                    <span style={{ cursor: 'help' }}>Nombre Herramienta</span>
+                  </Tooltip>
                 </TableCell>
                 <TableCell sx={{ color: '#00d2ff', fontWeight: 'bold', borderBottom: '2px solid #e81cff' }}>
-                  Veces Prestada
+                  <Tooltip title="Cantidad total de veces que se ha registrado un préstamo para esta herramienta" arrow placement="top">
+                    <span style={{ cursor: 'help' }}>Veces Prestada</span>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -282,7 +305,7 @@ const ToolListRanking = () => {
               {!loading && tools.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={2} align="center" sx={{ color: "#b392f0", py: 4 }}>
-                    No hay datos disponibles para el ranking.
+                    No hay datos disponibles para el ranking en el período seleccionado.
                   </TableCell>
                 </TableRow>
               )}

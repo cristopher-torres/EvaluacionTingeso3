@@ -4,14 +4,17 @@ import toolService from "../services/tool.service";
 import { 
     Autocomplete, TextField, Button, Table, TableBody, TableCell, 
     TableContainer, TableHead, TableRow, Paper, Typography, Box,
-    Backdrop, CircularProgress, Divider
+    Backdrop, CircularProgress, Divider, Tooltip
 } from "@mui/material";
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/es';
+
+import PageHelp from "../components/PageHelp";
 
 const KardexList = () => {
     const [tools, setTools] = useState([]);
@@ -164,9 +167,19 @@ const KardexList = () => {
                     <Typography variant="h6">{loadingMessage}</Typography>
                 </Backdrop>
 
-                <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", mb: 4, textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
-                    Kardex de Herramientas
-                </Typography>
+                <Box display="flex" alignItems="center" gap={1} mb={4}>
+                    <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
+                        Kardex de Herramientas
+                    </Typography>
+                    <PageHelp 
+                        title="Historial de Movimientos" 
+                        steps={[
+                            "Seleccione una herramienta para ver su historial específico.",
+                            "Use las fechas para acotar la búsqueda a un período exacto.",
+                            "Puede combinar ambos filtros o usarlos de forma individual."
+                        ]} 
+                    />
+                </Box>
 
                 <Box sx={{ display: 'flex', gap: 2, mb: 3, p: 3, bgcolor: '#1d0b3b', borderRadius: 2, border: '1px solid rgba(232, 28, 255, 0.2)', alignItems: 'center', flexWrap: 'wrap' }}>
                     <Autocomplete
@@ -175,7 +188,23 @@ const KardexList = () => {
                         value={selectedTool}
                         onChange={(e, v) => setSelectedTool(v)}
                         sx={{ minWidth: 250, ...inputSx }}
-                        renderInput={(p) => <TextField {...p} label="Herramienta" />}
+                        renderInput={(p) => (
+                            <TextField 
+                                {...p} 
+                                label="Herramienta" 
+                                InputProps={{
+                                    ...p.InputProps,
+                                    endAdornment: (
+                                        <>
+                                            <Tooltip title="Filtre todos los movimientos de una herramienta en particular" arrow placement="top">
+                                                <HelpOutlineIcon sx={{ color: "#e81cff", fontSize: "1.2rem", mr: 1, cursor: "help" }} />
+                                            </Tooltip>
+                                            {p.InputProps.endAdornment}
+                                        </>
+                                    ),
+                                }}
+                            />
+                        )}
                     />
 
                     <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
@@ -252,13 +281,17 @@ const KardexList = () => {
                         slotProps={{ popper: { sx: popperSx } }}
                     />
 
-                    <Button variant="contained" ref={dateBtnRef} onClick={handleApplyFilters} sx={{ bgcolor: "rgba(0, 210, 255, 0.1)", color: "#00d2ff", border: "1px solid #00d2ff", fontWeight: "bold", "&:hover": { bgcolor: "#00d2ff", color: "#100524" } }}>
-                        Aplicar Filtros
-                    </Button>
+                    <Tooltip title="Ejecutar la búsqueda con los parámetros ingresados" arrow placement="top">
+                        <Button variant="contained" ref={dateBtnRef} onClick={handleApplyFilters} sx={{ bgcolor: "rgba(0, 210, 255, 0.1)", color: "#00d2ff", border: "1px solid #00d2ff", fontWeight: "bold", "&:hover": { bgcolor: "#00d2ff", color: "#100524" } }}>
+                            Aplicar Filtros
+                        </Button>
+                    </Tooltip>
 
-                    <Button onClick={resetFilters} startIcon={<DeleteSweepIcon />} sx={{ color: '#ff1744', fontWeight: 'bold', ml: 'auto' }}>
-                        Limpiar
-                    </Button>
+                    <Tooltip title="Eliminar los filtros y recargar todos los movimientos" arrow placement="top">
+                        <Button onClick={resetFilters} startIcon={<DeleteSweepIcon />} sx={{ color: '#ff1744', fontWeight: 'bold', ml: 'auto', border: '1px dashed transparent', "&:hover": { bgcolor: 'rgba(255,23,68,0.1)', border: '1px dashed #ff1744' }, "&:focus": { outline: "none" } }}>
+                            Limpiar
+                        </Button>
+                    </Tooltip>
                 </Box>
 
                 {error && <Typography sx={{ color: "#e81cff", mb: 2, fontWeight: 'bold' }}>{error}</Typography>}
@@ -274,7 +307,7 @@ const KardexList = () => {
                         </TableHead>
                         <TableBody>
                             {movements.map(m => (
-                                <TableRow key={m.id} sx={{ '& td': { color: '#f1f5f9', borderBottom: '1px solid rgba(255,255,255,0.05)' } }}>
+                                <TableRow key={m.id} sx={{ '&:hover': { backgroundColor: 'rgba(232, 28, 255, 0.05)' }, '& td': { color: '#f1f5f9', borderBottom: '1px solid rgba(255,255,255,0.05)' } }}>
                                     <TableCell>{m.id}</TableCell>
                                     <TableCell>{m.userRut}</TableCell>
                                     <TableCell>{m.quantity}</TableCell>
@@ -282,6 +315,13 @@ const KardexList = () => {
                                     <TableCell>{new Date(m.dateTime).toLocaleString()}</TableCell>
                                 </TableRow>
                             ))}
+                            {!loading && movements.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={5} align="center" sx={{ color: "#b392f0", py: 4 }}>
+                                        No se encontraron registros de movimientos para esta búsqueda.
+                                    </TableCell>
+                                </TableRow>
+                            )}
                         </TableBody>
                     </Table>
                 </TableContainer>

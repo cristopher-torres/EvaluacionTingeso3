@@ -16,11 +16,14 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import Tooltip from "@mui/material/Tooltip";
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/es';
+
+import PageHelp from "../components/PageHelp";
 
 const ReportLateClient = () => {
   const [loans, setLoans] = useState([]);
@@ -140,6 +143,14 @@ const ReportLateClient = () => {
     }
   };
 
+  const tableHeaders = [
+    { label: "ID Cliente", tooltip: "Identificador único del cliente con atraso" },
+    { label: "Nombre", tooltip: "Nombre completo del cliente" },
+    { label: "Correo", tooltip: "Dirección de correo electrónico de contacto" },
+    { label: "Teléfono", tooltip: "Número de teléfono de contacto del cliente" },
+    { label: "ID Préstamo", tooltip: "Identificador del préstamo que se encuentra atrasado" }
+  ];
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
       <Box sx={{ p: 3, bgcolor: '#100524', minHeight: '100vh' }}>
@@ -161,9 +172,19 @@ const ReportLateClient = () => {
           </Typography>
         </Backdrop>
 
-        <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", mb: 4, textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
-          Préstamos Atrasados
-        </Typography>
+        <Box display="flex" alignItems="center" gap={1} mb={4}>
+          <Typography variant="h4" sx={{ color: "#00d2ff", fontWeight: "bold", textShadow: "0 0 10px rgba(0, 210, 255, 0.3)" }}>
+            Préstamos Atrasados
+          </Typography>
+          <PageHelp 
+            title="Reporte de Atrasos" 
+            steps={[
+              "Aquí se listan todos los clientes que no han devuelto sus herramientas en la fecha estipulada.",
+              "Puede filtrar los resultados seleccionando un rango de fechas.",
+              "Utilice los datos de contacto para comunicarse con los clientes listados."
+            ]} 
+          />
+        </Box>
 
         <Box sx={{ p: 3, mb: 3, bgcolor: '#1d0b3b', borderRadius: 2, border: '1px solid rgba(232, 28, 255, 0.2)', display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
@@ -242,22 +263,28 @@ const ReportLateClient = () => {
                 slotProps={{ popper: { sx: popperSx } }}
               />
 
-              <Button 
-                variant="contained" ref={filterBtnRef} onClick={fetchLateLoansByDate}
-                startIcon={<FilterAltIcon />} sx={cyanButtonStyle} disabled={!startDate || !endDate || loading}
-              >
-                Filtrar Rango
-              </Button>
+              <Tooltip title="Filtrar clientes con préstamos atrasados dentro de las fechas" arrow placement="top">
+                <span>
+                  <Button 
+                    variant="contained" ref={filterBtnRef} onClick={fetchLateLoansByDate}
+                    startIcon={<FilterAltIcon />} sx={cyanButtonStyle} disabled={!startDate || !endDate || loading}
+                  >
+                    Filtrar Rango
+                  </Button>
+                </span>
+              </Tooltip>
             </Box>
 
             <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
 
-            <Button 
-              onClick={resetFilters} startIcon={<DeleteSweepIcon />}
-              sx={{ ml: 'auto', color: '#ff1744', fontWeight: 'bold', border: '1px dashed #ff1744', "&:hover": { bgcolor: 'rgba(255,23,68,0.1)' }, "&:focus": { outline: "none" }, "&:focusVisible": { outline: "none" } }}
-            >
-              Limpiar Filtros
-            </Button>
+            <Tooltip title="Mostrar todos los préstamos atrasados sin restricciones de fecha" arrow placement="top">
+              <Button 
+                onClick={resetFilters} startIcon={<DeleteSweepIcon />}
+                sx={{ ml: 'auto', color: '#ff1744', fontWeight: 'bold', border: '1px dashed #ff1744', "&:hover": { bgcolor: 'rgba(255,23,68,0.1)' }, "&:focus": { outline: "none" }, "&:focusVisible": { outline: "none" } }}
+              >
+                Limpiar Filtros
+              </Button>
+            </Tooltip>
           </Box>
         </Box>
 
@@ -273,16 +300,18 @@ const ReportLateClient = () => {
           <Table>
             <TableHead sx={{ backgroundColor: 'rgba(0, 210, 255, 0.1)' }}>
               <TableRow>
-                {["ID Cliente", "Nombre", "Correo", "Teléfono", "ID Préstamo"].map((head) => (
+                {tableHeaders.map((header) => (
                   <TableCell 
-                    key={head} 
+                    key={header.label} 
                     sx={{ 
                       color: '#00d2ff', 
                       fontWeight: 'bold', 
                       borderBottom: '2px solid #e81cff' 
                     }}
                   >
-                    {head}
+                    <Tooltip title={header.tooltip} arrow placement="top">
+                      <span style={{ cursor: 'help' }}>{header.label}</span>
+                    </Tooltip>
                   </TableCell>
                 ))}
               </TableRow>
