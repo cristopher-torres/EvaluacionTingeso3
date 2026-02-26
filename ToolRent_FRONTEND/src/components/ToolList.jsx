@@ -84,11 +84,11 @@ const ToolList = () => {
   };
 
   const tableHeaders = [
-    { label: "ID", tooltip: "Identificador único" },
-    { label: "Nombre", tooltip: "Modelo de la herramienta" },
-    { label: "Categoría", tooltip: "Clasificación de uso" },
-    { label: "Estado", tooltip: "Situación actual en inventario" },
-    { label: "Acciones", tooltip: "Opciones de edición" }
+    { label: "ID", tooltip: "Identificador único de la herramienta en el sistema" },
+    { label: "Nombre", tooltip: "Nombre y modelo de la herramienta" },
+    { label: "Categoría", tooltip: "Tipo de trabajo para el que se utiliza" },
+    { label: "Estado", tooltip: "Disponibilidad actual (ej. Disponible, Prestada)" },
+    { label: "Acciones", tooltip: "Modificar detalles de la herramienta" }
   ];
 
   return (
@@ -106,13 +106,24 @@ const ToolList = () => {
           title="Gestión de Inventario" 
           steps={[
             "Visualice las herramientas registradas.",
-            "Use la búsqueda para filtrar por ID o nombre.",
+            "Use la búsqueda para filtrar por ID, nombre o categoría.",
             "Requiere permisos ADMIN para añadir o editar ítems."
           ]} 
         />
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, gap: 2 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        mb: 4, 
+        p: 3, 
+        bgcolor: '#1e293b', 
+        borderRadius: 2, 
+        border: '1px solid rgba(148, 163, 184, 0.12)', 
+        borderTop: "3px solid rgba(56, 189, 248, 0.4)",
+        gap: 2 
+      }}>
         <TextField
           label="Buscar herramienta..."
           variant="outlined"
@@ -121,15 +132,12 @@ const ToolList = () => {
           sx={inputSx}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          InputProps={{
-            endAdornment: <HelpOutlineIcon sx={{ color: "#94a3b8", fontSize: "1.1rem", mr: 1 }} />
-          }}
         />
 
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          sx={skyButtonStyle}
+          sx={{ ...skyButtonStyle, minWidth: '130px' }}
           onClick={() => {
             if (!keycloak.authenticated || !keycloak.hasRealmRole("ADMIN")) {
               alert("Acceso denegado: Se requieren permisos de administrador.");
@@ -248,7 +256,4 @@ const ToolList = () => {
 };
 
 export default ToolList;
-
-
-
 

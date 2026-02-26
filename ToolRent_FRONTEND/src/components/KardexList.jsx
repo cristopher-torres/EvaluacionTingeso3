@@ -174,6 +174,14 @@ const KardexList = () => {
         }
     };
 
+    const tableHeaders = [
+        { label: "ID", tooltip: "Identificador único del movimiento" },
+        { label: "RUT Usuario", tooltip: "RUT del usuario asociado al movimiento" },
+        { label: "Cantidad", tooltip: "Cantidad de herramientas involucradas" },
+        { label: "Tipo", tooltip: "Clasificación del movimiento en el kardex" },
+        { label: "Fecha / Hora", tooltip: "Momento exacto en que se registró el movimiento" }
+    ];
+
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
             <Box sx={{ p: 3, bgcolor: '#0f172a', minHeight: '100vh' }}>
@@ -298,8 +306,12 @@ const KardexList = () => {
                     <Table>
                         <TableHead sx={{ backgroundColor: 'rgba(15, 23, 42, 0.8)' }}>
                             <TableRow>
-                                {["ID", "RUT Usuario", "Cantidad", "Tipo", "Fecha / Hora"].map(h => (
-                                    <TableCell key={h} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>{h}</TableCell>
+                                {tableHeaders.map(h => (
+                                    <TableCell key={h.label} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                                        <Tooltip title={h.tooltip} arrow placement="top">
+                                            <span style={{ cursor: 'help' }}>{h.label}</span>
+                                        </Tooltip>
+                                    </TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
@@ -350,5 +362,3 @@ const KardexList = () => {
 };
 
 export default KardexList;
-
-

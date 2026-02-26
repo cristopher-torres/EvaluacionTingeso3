@@ -13,11 +13,15 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import Chip from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 import PageHelp from "../components/PageHelp";
 
 const LoanList = () => {
   const [loans, setLoans] = useState([]);
+  const [filteredLoans, setFilteredLoans] = useState([]);
+  const [rutFilter, setRutFilter] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,6 +29,7 @@ const LoanList = () => {
     getLoans()
       .then(res => {
         setLoans(res.data);
+        setFilteredLoans(res.data);
       })
       .catch(err => {
         console.error("Error al cargar préstamos:", err);
@@ -34,15 +39,45 @@ const LoanList = () => {
       });
   }, []);
 
+  const formatRut = (value) => {
+    let cleanValue = value.replace(/[^0-9kK]/g, "");
+    if (cleanValue.length > 9) cleanValue = cleanValue.slice(0, 9);
+    if (cleanValue.length <= 1) return cleanValue;
+    let body = cleanValue.slice(0, -1);
+    let dv = cleanValue.slice(-1).toUpperCase();
+    body = body.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return `${body}-${dv}`;
+  };
+
+  useEffect(() => {
+    const cleanFilter = rutFilter.replace(/[^0-9kK]/gi, "").toLowerCase();
+    const filtered = loans.filter(loan => {
+      const cleanRut = (loan.client?.rut || "").replace(/[^0-9kK]/gi, "").toLowerCase();
+      return cleanRut.includes(cleanFilter);
+    });
+    setFilteredLoans(filtered);
+  }, [rutFilter, loans]);
+
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const [year, month, day] = dateString.split("-");
     return `${day}/${month}/${year}`;
   };
 
+  const inputSx = {
+    "& .MuiOutlinedInput-root": {
+      color: "#e2e8f0",
+      "& fieldset": { borderColor: "rgba(148, 163, 184, 0.12)" },
+      "&:hover fieldset": { borderColor: "rgba(56, 189, 248, 0.4)" },
+      "&.Mui-focused fieldset": { borderColor: "#38bdf8" },
+    },
+    "& .MuiInputLabel-root": { color: "#94a3b8" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#38bdf8" },
+  };
+
   const tableHeaders = [
     { label: "ID", tooltip: "Identificador único del registro de préstamo" },
-    { label: "Herramienta", tooltip: "Identificador de la herramienta prestada" },
+    { label: "Herramienta (id)", tooltip: "Nombre e identificador de la herramienta prestada" },
     { label: "Cliente", tooltip: "Identificador del usuario que solicitó el préstamo" },
     { label: "Inicio", tooltip: "Fecha en que se inició el préstamo" },
     { label: "Fecha límite", tooltip: "Fecha programada para la devolución" },
@@ -77,9 +112,23 @@ const LoanList = () => {
           title="Historial General" 
           steps={[
             "Esta vista muestra el registro histórico de todos los préstamos.",
+            "Utilice el buscador para filtrar préstamos por el RUT del cliente.",
             "Incluye tanto los préstamos que están en curso como los ya finalizados.",
             "Pase el cursor sobre los encabezados de la tabla para ver más detalles de cada columna."
           ]} 
+        />
+      </Box>
+
+      <Box sx={{ mb: 4, p: 3, bgcolor: '#1e293b', borderRadius: 2, border: '1px solid rgba(148, 163, 184, 0.12)', borderTop: "3px solid rgba(56, 189, 248, 0.4)" }}>
+        <TextField 
+          label="Buscar préstamo por RUT de cliente" 
+          variant="outlined" 
+          size="small" 
+          fullWidth 
+          sx={inputSx} 
+          value={rutFilter} 
+          onChange={(e) => setRutFilter(formatRut(e.target.value))} 
+          placeholder="12.345.678-9"
         />
       </Box>
 
@@ -115,7 +164,7 @@ const LoanList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {loans.map(loan => (
+            {filteredLoans.map(loan => (
               <TableRow 
                 key={loan.id} 
                 sx={{ 
@@ -127,8 +176,8 @@ const LoanList = () => {
                 }}
               >
                 <TableCell>{loan.id}</TableCell>
-                <TableCell>{loan.tool?.id}</TableCell>
-                <TableCell>{loan.client?.id}</TableCell>
+                <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}> {loan.tool?.name} ({loan.tool?.id})</TableCell>
+                <TableCell>{loan.client?.rut}</TableCell>
                 <TableCell>{formatDate(loan.startDate)}</TableCell>
                 <TableCell>{formatDate(loan.scheduledReturnDate)}</TableCell>
                 <TableCell>
@@ -146,10 +195,10 @@ const LoanList = () => {
                 </TableCell>
               </TableRow>
             ))}
-            {!loading && loans.length === 0 && (
+            {!loading && filteredLoans.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ color: "#94a3b8", py: 8 }}>
-                  No hay registros de préstamos disponibles.
+                  No hay registros de préstamos disponibles para ese RUT.
                 </TableCell>
               </TableRow>
             )}

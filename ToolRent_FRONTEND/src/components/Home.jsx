@@ -12,6 +12,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Chip from "@mui/material/Chip";
+import Tooltip from "@mui/material/Tooltip";
 import toolService from "../services/tool.service";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +26,15 @@ const Home = () => {
       .then((response) => setToolsStock(response.data))
       .catch((error) => console.error("Error al cargar stock", error));
   }, []);
+
+  const tableHeaders = [
+    { label: 'Nombre', tooltip: 'Nombre o modelo de la herramienta' },
+    { label: 'Categoría', tooltip: 'Clasificación de la herramienta' },
+    { label: 'Disponible', tooltip: 'Unidades listas para ser prestadas' },
+    { label: 'Prestada', tooltip: 'Unidades actualmente en préstamo' },
+    { label: 'En Reparación', tooltip: 'Unidades en mantenimiento o reparación' },
+    { label: 'Dada de Baja', tooltip: 'Unidades retiradas del inventario' }
+  ];
 
   return (
     <Box
@@ -175,9 +185,9 @@ const Home = () => {
             <Table>
               <TableHead sx={{ backgroundColor: 'rgba(15, 23, 42, 0.8)' }}>
                 <TableRow>
-                  {['Nombre', 'Categoría', 'Disponible', 'Prestada', 'En Reparación', 'Dada de Baja'].map((col) => (
+                  {tableHeaders.map((col) => (
                     <TableCell
-                      key={col}
+                      key={col.label}
                       sx={{
                         fontWeight: 600,
                         // sky-300
@@ -189,7 +199,9 @@ const Home = () => {
                         borderBottom: '1px solid rgba(148, 163, 184, 0.12)',
                       }}
                     >
-                      {col}
+                      <Tooltip title={col.tooltip} arrow placement="top">
+                        <span style={{ cursor: 'help' }}>{col.label}</span>
+                      </Tooltip>
                     </TableCell>
                   ))}
                 </TableRow>

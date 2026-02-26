@@ -82,6 +82,16 @@ const UnpaidLoansPage = () => {
       .finally(() => setLoading(false));
   };
 
+  const formatRut = (value) => {
+    let cleanValue = value.replace(/[^0-9kK]/g, "");
+    if (cleanValue.length > 9) cleanValue = cleanValue.slice(0, 9);
+    if (cleanValue.length <= 1) return cleanValue;
+    let body = cleanValue.slice(0, -1);
+    let dv = cleanValue.slice(-1).toUpperCase();
+    body = body.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return `${body}-${dv}`;
+  };
+
   const skyButtonStyle = {
     backgroundColor: "rgba(56, 189, 248, 0.07)",
     border: "1px solid rgba(56, 189, 248, 0.25)",
@@ -146,10 +156,8 @@ const UnpaidLoansPage = () => {
           fullWidth 
           sx={inputSx} 
           value={rutFilter} 
-          onChange={(e) => setRutFilter(e.target.value)} 
-          InputProps={{
-            endAdornment: <HelpOutlineIcon sx={{ color: "#94a3b8", fontSize: "1.1rem", mr: 1 }} />
-          }}
+          onChange={(e) => setRutFilter(formatRut(e.target.value))} 
+          placeholder="12.345.678-9"
         />
       </Box>
 

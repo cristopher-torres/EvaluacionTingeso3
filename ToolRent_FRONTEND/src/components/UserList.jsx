@@ -9,6 +9,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Backdrop from "@mui/material/Backdrop";
@@ -16,20 +17,45 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import Chip from "@mui/material/Chip";
 import EditIcon from "@mui/icons-material/Edit";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import PageHelp from "../components/PageHelp";
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [rutFilter, setRutFilter] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
     getAllClients()
-      .then((res) => setUsers(res.data))
+      .then((res) => {
+        setUsers(res.data);
+        setFilteredUsers(res.data);
+      })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
+
+  const formatRut = (value) => {
+    let cleanValue = value.replace(/[^0-9kK]/g, "");
+    if (cleanValue.length > 9) cleanValue = cleanValue.slice(0, 9);
+    if (cleanValue.length <= 1) return cleanValue;
+    let body = cleanValue.slice(0, -1);
+    let dv = cleanValue.slice(-1).toUpperCase();
+    body = body.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return `${body}-${dv}`;
+  };
+
+  useEffect(() => {
+    const cleanFilter = rutFilter.replace(/[^0-9kK]/gi, "").toLowerCase();
+    const filtered = users.filter(user => {
+      const cleanRut = (user.rut || "").replace(/[^0-9kK]/gi, "").toLowerCase();
+      return cleanRut.includes(cleanFilter);
+    });
+    setFilteredUsers(filtered);
+  }, [rutFilter, users]);
 
   const skyButtonStyle = {
     backgroundColor: "rgba(56, 189, 248, 0.07)",
@@ -42,6 +68,17 @@ const UserList = () => {
       color: "#e2e8f0",
       border: "1px solid rgba(56, 189, 248, 0.4)"
     }
+  };
+
+  const inputSx = {
+    "& .MuiOutlinedInput-root": {
+      color: "#e2e8f0",
+      "& fieldset": { borderColor: "rgba(148, 163, 184, 0.12)" },
+      "&:hover fieldset": { borderColor: "rgba(56, 189, 248, 0.4)" },
+      "&.Mui-focused fieldset": { borderColor: "#38bdf8" },
+    },
+    "& .MuiInputLabel-root": { color: "#94a3b8" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "#38bdf8" },
   };
 
   const tableHeaders = [
@@ -75,9 +112,23 @@ const UserList = () => {
           title="Gestión de Clientes" 
           steps={[
             "Visualice la lista completa de clientes registrados.",
-            "Verifique el estado de habilitación de cada cuenta.",
+            "Utilice el buscador para encontrar un cliente por su RUT.",
+            "Verifique el estado de cada cuenta para identificar si esta en condiciones de realizar un prestamo.",
             "Utilice el botón de edición para actualizar información de contacto."
           ]} 
+        />
+      </Box>
+
+      <Box sx={{ mb: 4, p: 3, bgcolor: '#1e293b', borderRadius: 2, border: '1px solid rgba(148, 163, 184, 0.12)', borderTop: "3px solid rgba(56, 189, 248, 0.4)" }}>
+        <TextField 
+          label="Buscar usuario por RUT" 
+          variant="outlined" 
+          size="small" 
+          fullWidth 
+          sx={inputSx} 
+          value={rutFilter} 
+          onChange={(e) => setRutFilter(formatRut(e.target.value))} 
+          placeholder="12.345.678-9"
         />
       </Box>
 
@@ -104,7 +155,7 @@ const UserList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <TableRow 
                 key={user.id} 
                 sx={{ 
@@ -145,7 +196,7 @@ const UserList = () => {
                 </TableCell>
               </TableRow>
             ))}
-            {!loading && users.length === 0 && (
+            {!loading && filteredUsers.length === 0 && (
               <TableRow>
                 <TableCell colSpan={9} align="center" sx={{ color: "#64748b", py: 8 }}>
                   No se han encontrado registros de usuarios.

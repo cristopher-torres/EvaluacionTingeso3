@@ -14,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
+import Tooltip from "@mui/material/Tooltip";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -108,10 +109,15 @@ const ToolListRanking = () => {
     '& .MuiDayCalendar-weekDayLabel': { color: '#94a3b8' }
   };
 
+  const tableHeaders = [
+    { label: "Nombre Herramienta", tooltip: "Nombre de la herramienta" },
+    { label: "Veces Prestada", tooltip: "Frecuencia o cantidad de veces que ha sido solicitada" }
+  ];
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
       <Box sx={{ p: 3, bgcolor: '#0f172a', minHeight: '100vh' }}>
-        <Backdrop sx={{ color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
+        <Backdrop sx={{ display: 'flex', flexDirection: 'column', color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
           <CircularProgress color="inherit" />
           <Typography variant="h6" sx={{ mt: 2, color: '#38bdf8' }}>{loadingMessage}</Typography>
         </Backdrop>
@@ -176,9 +182,11 @@ const ToolListRanking = () => {
           <Table>
             <TableHead sx={{ backgroundColor: 'rgba(15, 23, 42, 0.8)' }}>
               <TableRow>
-                {["Nombre Herramienta", "Veces Prestada"].map((h) => (
-                  <TableCell key={h} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', borderBottom: '2px solid rgba(56, 189, 248, 0.3)' }}>
-                    {h}
+                {tableHeaders.map((h) => (
+                  <TableCell key={h.label} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', borderBottom: '2px solid rgba(56, 189, 248, 0.3)' }}>
+                    <Tooltip title={h.tooltip} arrow placement="top">
+                      <span style={{ cursor: 'help' }}>{h.label}</span>
+                    </Tooltip>
                   </TableCell>
                 ))}
               </TableRow>

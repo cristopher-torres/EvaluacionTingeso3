@@ -191,11 +191,21 @@ const ActiveLoanList = () => {
     '& .MuiDayCalendar-weekDayLabel': { color: '#94a3b8' }
   };
 
+  const tableHeaders = [
+    { label: "ID", tooltip: "Identificador único del préstamo" },
+    { label: "Herramienta (ID)", tooltip: "Nombre e ID de la herramienta prestada" },
+    { label: "Cliente", tooltip: "RUT del cliente" },
+    { label: "Inicio", tooltip: "Fecha de inicio del préstamo" },
+    { label: "Fecha límite", tooltip: "Fecha límite para devolver la herramienta" },
+    { label: "Estado", tooltip: "Estado actual del préstamo" },
+    { label: "Acción", tooltip: "Opciones para procesar la devolución" }
+  ];
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
       <Box sx={{ p: 3, bgcolor: '#0f172a', minHeight: '100vh' }}>
         
-        <Backdrop sx={{ color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
+        <Backdrop sx={{ display: 'flex', flexDirection: 'column', color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
           <CircularProgress color="inherit" />
           <Typography variant="h6" sx={{ mt: 2, color: '#38bdf8' }}>{loadingMessage}</Typography>
         </Backdrop>
@@ -314,12 +324,16 @@ const ActiveLoanList = () => {
             </Box>
         </Box>
 
-        <TableContainer component={Paper} sx={{ bgcolor: '#1e293b', borderRadius: 2, border: "1px solid rgba(148, 163, 184, 0.1)", boxShadow: "0 4px 24px rgba(0, 0, 0, 0.35)" }}>
+        <TableContainer component={Paper} sx={{ bgcolor: '#1e293b', borderRadius: 2, border: "1px solid rgba(148, 163, 184, 0.1)", boxShadow: "0 4px 24px rgba(0, 0, 0, 0.35)", borderTop: "3px solid rgba(56, 189, 248, 0.4)" }}>
           <Table>
             <TableHead sx={{ backgroundColor: 'rgba(15, 23, 42, 0.8)' }}>
               <TableRow>
-                {["ID", "Herramienta", "Cliente (ID)", "Inicio", "Fecha límite", "Estado", "Acción"].map(head => (
-                  <TableCell key={head} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em' }}>{head}</TableCell>
+                {tableHeaders.map((h) => (
+                  <TableCell key={h.label} sx={{ color: '#7dd3fc', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.05em', borderBottom: '2px solid rgba(56, 189, 248, 0.2)' }}>
+                    <Tooltip title={h.tooltip} arrow placement="top">
+                      <span style={{ cursor: 'help' }}>{h.label}</span>
+                    </Tooltip>
+                  </TableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -327,8 +341,8 @@ const ActiveLoanList = () => {
               {loans.map(loan => (
                 <TableRow key={loan.id} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148,163,184,0.07)' } }}>
                   <TableCell>{loan.id}</TableCell>
-                  <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{loan.tool?.name}</TableCell>
-                  <TableCell>{loan.client?.id}</TableCell>
+                  <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}> {loan.tool?.name} ({loan.tool?.id})</TableCell>
+                  <TableCell>{loan.client?.rut}</TableCell>
                   <TableCell>{formatDate(loan.startDate)}</TableCell>
                   <TableCell>{formatDate(loan.scheduledReturnDate)}</TableCell>
                   <TableCell>
@@ -336,11 +350,11 @@ const ActiveLoanList = () => {
                       label={loan.loanStatus} 
                       size="small"
                       sx={{ 
-                        backgroundColor: loan.loanStatus === 'ATRASADO' ? 'rgba(248, 113, 113, 0.1)' : 'rgba(56, 189, 248, 0.1)',
-                        color: loan.loanStatus === 'ATRASADO' ? '#f87171' : '#38bdf8',
+                        backgroundColor: loan.loanStatus === 'ATRASADO' ? 'rgba(248, 113, 113, 0.1)' : loan.loanStatus === 'Vigente' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(56, 189, 248, 0.1)',
+                        color: loan.loanStatus === 'ATRASADO' ? '#f87171' : loan.loanStatus === 'Vigente' ? '#4ade80' : '#38bdf8',
                         fontWeight: 600,
                         fontSize: '0.7rem',
-                        border: `1px solid ${loan.loanStatus === 'ATRASADO' ? 'rgba(248, 113, 113, 0.2)' : 'rgba(56, 189, 248, 0.2)'}`
+                        border: `1px solid ${loan.loanStatus === 'ATRASADO' ? 'rgba(248, 113, 113, 0.2)' : loan.loanStatus === 'Vigente' ? 'rgba(34, 197, 94, 0.2)' : 'rgba(56, 189, 248, 0.2)'}`
                       }}
                     />
                   </TableCell>
