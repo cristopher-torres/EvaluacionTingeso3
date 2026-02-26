@@ -387,6 +387,13 @@ const AddLoan = () => {
           <Button ref={submitBtnRef} type="submit" variant="contained" sx={skyButtonStyle} startIcon={<SaveIcon />}>
             Confirmar Préstamo
           </Button>
+
+          {/* Bloque a agregar: Volver al Home */}
+          <Typography variant="body2" align="center" sx={{ mt: 1 }}>
+            <Link to="/" style={{ color: "#94a3b8", textDecoration: "none", fontWeight: 600 }}>
+              ← Volver al Home
+            </Link>
+          </Typography>
         </Box>
 
         <Dialog 

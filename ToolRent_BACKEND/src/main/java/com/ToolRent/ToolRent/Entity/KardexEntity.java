@@ -1,6 +1,7 @@
 package com.ToolRent.ToolRent.Entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -33,6 +34,16 @@ public class KardexEntity {
     @JoinColumn(name = "tool_id", nullable = false)
     @JsonBackReference(value = "tool-kardex")
     private ToolsEntity tool;
+
+    @JsonProperty("toolName")
+    public String getToolName() {
+        return tool.getName();
+    }
+
+    @JsonProperty("toolId")
+    public Long getToolId() {
+        return tool.getId();
+    }
 
     private String userRut;
 

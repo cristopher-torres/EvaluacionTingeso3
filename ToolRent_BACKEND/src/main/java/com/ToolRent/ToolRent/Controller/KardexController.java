@@ -48,4 +48,11 @@ public class KardexController {
         }
         return ResponseEntity.ok(movements);
     }
+    @GetMapping("/filter")
+    public List<KardexEntity> getFiltered(
+            @RequestParam Long toolId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+        return kardexService.getFilteredKardex(toolId, start, end);
+    }
 }

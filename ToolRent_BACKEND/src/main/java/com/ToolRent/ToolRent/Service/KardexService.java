@@ -31,4 +31,8 @@ public class KardexService {
     public List<KardexEntity> getAll() {
         return kardexRepository.findAllByOrderByDateTimeDesc();
     }
+
+    public List<KardexEntity> getFilteredKardex(Long toolId, LocalDateTime start, LocalDateTime end) {
+        return kardexRepository.findByToolAndDateRange(toolId, start, end);
+    }
 }

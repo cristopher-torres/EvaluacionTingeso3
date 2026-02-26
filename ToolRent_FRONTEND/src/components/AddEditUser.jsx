@@ -12,6 +12,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { Select, MenuItem, Backdrop, CircularProgress, Tooltip } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import PageHelp from "../components/PageHelp";
+import { Link } from "react-router-dom";
 
 const AddEditUser = () => {
   const { userId } = useParams();
@@ -260,6 +261,13 @@ const AddEditUser = () => {
         <Button type="submit" variant="contained" ref={submitBtnRef} disabled={loading} sx={skyButtonStyle} startIcon={<SaveIcon />}>
           Guardar Usuario
         </Button>
+
+        {/* Bloque añadido: Enlace para volver al Home */}
+        <Typography variant="body2" align="center" sx={{ mt: 1 }}>
+          <Link to="/" style={{ color: "#94a3b8", textDecoration: "none", fontWeight: 600 }}>
+            ← Volver al Home
+          </Link>
+        </Typography>
       </Box>
 
       <Snackbar open={openSnackbar} autoHideDuration={2000} onClose={() => setOpenSnackbar(false)} anchorOrigin={{ vertical: "top", horizontal: "center" }}>

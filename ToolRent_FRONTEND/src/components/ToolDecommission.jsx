@@ -22,6 +22,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Tooltip from "@mui/material/Tooltip";
+import Chip from "@mui/material/Chip"; // Importado para los estados
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { useKeycloak } from "@react-keycloak/web";
 import PageHelp from "../components/PageHelp";
@@ -92,6 +93,17 @@ const ToolDecommission = () => {
       );
     });
 
+  const getStatusStyles = (status) => {
+    const s = status?.toUpperCase();
+    if (s === 'EN_REPARACION' || s === 'PRESTADA') {
+      return { bg: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: 'rgba(251, 191, 36, 0.2)' };
+    } else if (s === 'DISPONIBLE') {
+      return { bg: 'rgba(34, 197, 94, 0.1)', color: '#4ade80', border: 'rgba(34, 197, 94, 0.2)' };
+    } else {
+      return { bg: 'rgba(248, 113, 113, 0.1)', color: '#f87171', border: 'rgba(248, 113, 113, 0.2)' };
+    }
+  };
+
   const inputSx = {
     "& .MuiOutlinedInput-root": {
       color: "#e2e8f0",
@@ -145,7 +157,7 @@ const ToolDecommission = () => {
         />
       </Box>
 
-      <Box sx={{ mb: 4, p: 3, bgcolor: '#1e293b', borderRadius: 2, border: '1px solid rgba(148, 163, 184, 0.12)', borderTop: "3px solid rgba(248, 113, 113, 0.4)" }}>
+      <Box sx={{ mb: 4, p: 3, bgcolor: '#1e293b', borderRadius: 2, border: '1px solid rgba(148, 163, 184, 0.12)', borderTop: "3px solid rgba(56, 189, 248, 0.4)" }}>
         <TextField 
           label="Buscar por ID, Nombre o Categoría" 
           variant="outlined" 
@@ -154,13 +166,6 @@ const ToolDecommission = () => {
           sx={inputSx} 
           value={searchTerm} 
           onChange={(e) => setSearchTerm(e.target.value)} 
-          InputProps={{
-            endAdornment: (
-              <Tooltip title="Filtrado dinámico de inventario" arrow placement="top">
-                <HelpOutlineIcon sx={{ color: "#94a3b8", fontSize: "1.1rem", cursor: "help" }} />
-              </Tooltip>
-            )
-          }}
         />
       </Box>
 
@@ -178,26 +183,39 @@ const ToolDecommission = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredTools.map((tool) => (
-              <TableRow key={tool.id} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148,163,184,0.07)' } }}>
-                <TableCell>{tool.id}</TableCell>
-                <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{tool.name}</TableCell>
-                <TableCell>{tool.category}</TableCell>
-                <TableCell>
-                  <Typography sx={{ color: '#4ade80', fontWeight: 600, fontSize: '0.85rem' }}>{tool.status}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={destructiveButtonStyle}
-                    onClick={() => handleOpenConfirm(tool)}
-                  >
-                    Dar de baja
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {filteredTools.map((tool) => {
+              const styles = getStatusStyles(tool.status);
+              return (
+                <TableRow key={tool.id} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148,163,184,0.07)' } }}>
+                  <TableCell>{tool.id}</TableCell>
+                  <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{tool.name}</TableCell>
+                  <TableCell>{tool.category}</TableCell>
+                  <TableCell>
+                    <Chip 
+                      label={tool.status} 
+                      size="small"
+                      sx={{ 
+                        backgroundColor: styles.bg,
+                        color: styles.color,
+                        fontWeight: 600,
+                        fontSize: '0.7rem',
+                        border: `1px solid ${styles.border}`
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={destructiveButtonStyle}
+                      onClick={() => handleOpenConfirm(tool)}
+                    >
+                      Dar de baja
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
             {!loading && filteredTools.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ color: "#64748b", py: 8 }}>

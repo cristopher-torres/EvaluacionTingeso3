@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { getMovementsByTool, getMovementsByDateRange, getAllMovements } from "../services/kardex.service";
+import { getMovementsByTool, getMovementsByDateRange, getAllMovements, getFiltered } from "../services/kardex.service";
 import toolService from "../services/tool.service";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -63,14 +63,14 @@ const KardexList = () => {
         const hasTool = selectedTool !== null;
 
         if (hasTool && hasDates) {
-            const startStr = startDate.format('YYYY-MM-DD');
-            const endStr = endDate.format('YYYY-MM-DD');
-            getMovementsByDateRange(`${startStr}T00:00:00`, `${endStr}T23:59:59`)
+            const startStr = `${startDate.format('YYYY-MM-DD')}T00:00:00`;
+            const endStr = `${endDate.format('YYYY-MM-DD')}T23:59:59`;
+            getFiltered(selectedTool.id, startStr, endStr)
                 .then(res => {
-                    const filtered = res.data.filter(m => m.toolId === selectedTool.id);
-                    setMovements(filtered);
+                    setMovements(res.data);
                     setError("");
                 })
+                .catch(() => setError("Error en el filtrado combinado"))
                 .finally(() => setLoading(false));
         } else if (hasTool) {
             getMovementsByTool(selectedTool.id)
@@ -169,7 +169,7 @@ const KardexList = () => {
         outline: "none",
         "&:hover": { 
             backgroundColor: "rgba(56, 189, 248, 0.14)", 
-            color: "#e2e8f0",
+            color: "#e2e8f0", 
             border: "1px solid rgba(56, 189, 248, 0.4)"
         }
     };
@@ -177,6 +177,7 @@ const KardexList = () => {
     const tableHeaders = [
         { label: "ID", tooltip: "Identificador único del movimiento" },
         { label: "RUT Usuario", tooltip: "RUT del usuario asociado al movimiento" },
+        { label: "Herramienta (ID)", tooltip: "Nombre e ID de la herramienta involucrada" },
         { label: "Cantidad", tooltip: "Cantidad de herramientas involucradas" },
         { label: "Tipo", tooltip: "Clasificación del movimiento en el kardex" },
         { label: "Fecha / Hora", tooltip: "Momento exacto en que se registró el movimiento" }
@@ -320,6 +321,7 @@ const KardexList = () => {
                                 <TableRow key={m.id} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148, 163, 184, 0.07)' } }}>
                                     <TableCell>{m.id}</TableCell>
                                     <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}>{m.userRut}</TableCell>
+                                    <TableCell sx={{ color: '#e2e8f0', fontWeight: 500 }}> {m.toolName} ({m.toolId})</TableCell>
                                     <TableCell>{m.quantity}</TableCell>
                                     <TableCell>
                                         {(() => {

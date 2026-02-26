@@ -8,8 +8,12 @@ export const getMovementsByDateRange = (start, end) => {
   return httpClient.get(`/api/kardex/dates?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`);
 };
 
+export const getFiltered = (toolId, start, end) => {
+  return httpClient.get(`/api/kardex/filter?toolId=${toolId}&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`);
+};
+
 export const getAllMovements = () => {
   return httpClient.get("/api/kardex/all");
 };
 
-export default { getMovementsByTool, getMovementsByDateRange, getAllMovements };
+export default { getMovementsByTool, getMovementsByDateRange, getFiltered, getAllMovements };
