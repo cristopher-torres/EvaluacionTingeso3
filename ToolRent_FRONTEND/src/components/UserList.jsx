@@ -1,10 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllClients } from "../services/user.service";
-import { 
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
-  Paper, Button, Box, Typography, Backdrop, CircularProgress, Tooltip, Chip 
-} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import Tooltip from "@mui/material/Tooltip";
+import Chip from "@mui/material/Chip";
 import EditIcon from "@mui/icons-material/Edit";
 import PageHelp from "../components/PageHelp";
 

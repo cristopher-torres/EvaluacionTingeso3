@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useKeycloak } from "@react-keycloak/web";
 import { useNavigate } from 'react-router-dom';
-import logo from "../assets/ToolRent_Logo.png";
+import logo from "../assets/ToolRent_Logo.webp";
 import Sidemenu from "./Sidemenu";
 import { useState } from 'react';
 import Menu from '@mui/material/Menu';
@@ -96,6 +96,8 @@ function DesktopAppBar() {
               <img
                 src={logo}
                 alt="ToolRent Logo"
+                width="60"      
+                height="60"     
                 style={{ height: 60, marginRight: 5 }}
               />
               {/* "Tool" en celeste suave */}

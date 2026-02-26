@@ -1,11 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getMovementsByTool, getMovementsByDateRange, getAllMovements } from "../services/kardex.service";
 import toolService from "../services/tool.service";
-import { 
-    Autocomplete, TextField, Button, Table, TableBody, TableCell, 
-    TableContainer, TableHead, TableRow, Paper, Typography, Box,
-    Backdrop, CircularProgress, Divider, Tooltip, Chip 
-} from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
+import Tooltip from "@mui/material/Tooltip";
+import Chip from "@mui/material/Chip";
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -93,10 +105,10 @@ const KardexList = () => {
             case 'DEVOLUCION':
             case 'INGRESO':
                 return { bg: 'rgba(34, 197, 94, 0.1)', color: '#4ade80', border: 'rgba(34, 197, 94, 0.25)' };
-            case 'PRESTAMO':
             case 'BAJA':
             case 'SALIDA':
                 return { bg: 'rgba(248, 113, 113, 0.1)', color: '#f87171', border: 'rgba(248, 113, 113, 0.25)' };
+            case 'PRESTAMO':
             case 'REPARACION':
                 return { bg: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: 'rgba(251, 191, 36, 0.25)' };
             default:
@@ -165,7 +177,7 @@ const KardexList = () => {
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
             <Box sx={{ p: 3, bgcolor: '#0f172a', minHeight: '100vh' }}>
-                <Backdrop sx={{ color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
+                <Backdrop sx={{ display: 'flex', flexDirection: 'column', color: '#38bdf8', zIndex: 1201, backgroundColor: 'rgba(15, 23, 42, 0.9)' }} open={loading}>
                     <CircularProgress color="inherit" />
                     <Typography variant="h6" sx={{ mt: 2, color: '#38bdf8' }}>{loadingMessage}</Typography>
                 </Backdrop>
@@ -266,6 +278,21 @@ const KardexList = () => {
                 </Box>
 
                 {error && <Typography sx={{ color: "#f87171", mb: 2, fontWeight: 600 }}>{error}</Typography>}
+
+                <Box sx={{ display: 'flex', gap: 3, mb: 2, px: 1, flexWrap: 'wrap' }}>
+                    <Box display="flex" alignItems="center" gap={1}>
+                        <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#4ade80', boxShadow: '0 0 8px rgba(74, 222, 128, 0.4)' }} />
+                        <Typography variant="body2" sx={{ color: '#cbd5e1', fontWeight: 500 }}>Aumento en el stock</Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center" gap={1}>
+                        <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#fbbf24', boxShadow: '0 0 8px rgba(251, 191, 36, 0.4)' }} />
+                        <Typography variant="body2" sx={{ color: '#cbd5e1', fontWeight: 500 }}>Baja momentánea de stock</Typography>
+                    </Box>
+                    <Box display="flex" alignItems="center" gap={1}>
+                        <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#f87171', boxShadow: '0 0 8px rgba(248, 113, 113, 0.4)' }} />
+                        <Typography variant="body2" sx={{ color: '#cbd5e1', fontWeight: 500 }}>Baja en el stock</Typography>
+                    </Box>
+                </Box>
 
                 <TableContainer component={Paper} sx={{ bgcolor: '#1e293b', borderRadius: 2, border: "1px solid rgba(148, 163, 184, 0.1)", boxShadow: "0 4px 24px rgba(0, 0, 0, 0.35)" }}>
                     <Table>

@@ -16,7 +16,10 @@ import ReportLateClient from './components/ReportLateClient'
 import ToolListRanking from './components/ToolListRanking'
 import UserList from './components/UserList'
 import UnpaidLoansPage from './components/UnpaidLoanList'
-import { Box, Typography, CircularProgress, Button } from "@mui/material"
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
 import SecurityIcon from '@mui/icons-material/Security'
 import HomeIcon from '@mui/icons-material/Home'
 

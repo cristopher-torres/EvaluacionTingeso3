@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { IconButton, Tooltip, Popover, Typography, Box } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import Popover from "@mui/material/Popover";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 const PageHelp = ({ title, steps }) => {

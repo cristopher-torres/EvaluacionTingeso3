@@ -1,11 +1,27 @@
 import { useEffect, useState } from "react";
 import { getUnpaidLoans, updateFinePaid } from "../services/loan.service";
-import { 
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
-  Paper, Button, Box, Typography, Backdrop, CircularProgress, 
-  Snackbar, Alert, TextField, Dialog, DialogActions, DialogContent, 
-  DialogContentText, DialogTitle, Tooltip, Divider 
-} from "@mui/material";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Tooltip from "@mui/material/Tooltip";
+import Divider from "@mui/material/Divider";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import PageHelp from "../components/PageHelp";
 
