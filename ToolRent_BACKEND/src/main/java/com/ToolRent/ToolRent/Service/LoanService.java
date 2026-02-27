@@ -3,7 +3,7 @@ package com.ToolRent.ToolRent.Service;
 import com.ToolRent.ToolRent.Entity.*;
 import com.ToolRent.ToolRent.Repository.LoanRepository;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,19 +13,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class LoanService {
 
-    @Autowired
-    private LoanRepository loanRepository;
+    private final LoanRepository loanRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private ToolsService toolsService;
+    private final ToolsService toolsService;
 
-    @Autowired
-    private KardexService kardexService;
+    private final KardexService kardexService;
 
     @Transactional
     public LoanEntity createLoan(LoanEntity loan, String rut ) {
@@ -96,7 +93,7 @@ public class LoanService {
         UserEntity user = userService.findById(userId);
         String status = user.getStatus();
         if (!"Activo".equalsIgnoreCase(status)) {
-            throw new RuntimeException("El cliente no esta disponible para realizar un prestamo");
+            throw new IllegalStateException("El cliente no esta disponible para realizar un prestamo");
         }
     }
 
@@ -106,7 +103,7 @@ public class LoanService {
                 .orElseThrow(() -> new RuntimeException("Préstamo no encontrado"));
 
         if (loan.isDelivered()) {
-            throw new RuntimeException("El préstamo ya fue devuelto");
+            throw new IllegalStateException("El préstamo ya fue devuelto");
         }
 
         LocalDate today = LocalDate.now();
@@ -161,9 +158,7 @@ public class LoanService {
 
 
     public List<LoanEntity> getAllLoans() {
-        LocalDate now = LocalDate.now();
         List<LoanEntity> loans = loanRepository.findAll();
-
         return loans;
     }
 
@@ -171,8 +166,6 @@ public class LoanService {
     // Obtener préstamos activos ordenados
 
     public List<LoanEntity> getActiveLoans() {
-        LocalDate now = LocalDate.now();
-
         // Traer los préstamos vigentes
         List<LoanEntity> loans = loanRepository.findActiveLoansOrderedByDateDesc();
 
@@ -185,7 +178,6 @@ public class LoanService {
     }
 
     @Scheduled(cron = "0 0 0 * * ?", zone = "America/Santiago") // todos los días a medianoche
-    @Transactional
     public void updateOverdueLoans() {
         LocalDate today = LocalDate.now();
         List<LoanEntity> activeLoans = loanRepository.findActiveLoansOrderedByDateDesc();

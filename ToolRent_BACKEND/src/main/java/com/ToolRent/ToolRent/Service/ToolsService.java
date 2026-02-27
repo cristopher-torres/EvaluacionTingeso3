@@ -5,7 +5,7 @@ import com.ToolRent.ToolRent.Entity.KardexEntity;
 import com.ToolRent.ToolRent.Entity.ToolStatus;
 import com.ToolRent.ToolRent.Entity.ToolsEntity;
 import com.ToolRent.ToolRent.Repository.ToolsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,15 +14,14 @@ import java.util.*;
 
 
 @Service
+@RequiredArgsConstructor
 public class ToolsService {
-    @Autowired
-    private ToolsRepository toolsRepository;
 
-    @Autowired
-    private UserService userService;
+    private final ToolsRepository toolsRepository;
 
-    @Autowired
-    private KardexService kardexService;
+    private final KardexService kardexService;
+
+    private static final String TOOL_NOT_FOUND_MESSAGE = "Herramienta no encontrada";
 
     // Registrar herramienta
     @Transactional
@@ -74,7 +73,7 @@ public class ToolsService {
     public ToolsEntity decommissionTool(Long toolId, String rut) {
 
         ToolsEntity tool = toolsRepository.findById(toolId)
-                .orElseThrow(() -> new RuntimeException("Herramienta no encontrada"));
+                .orElseThrow(() -> new RuntimeException(TOOL_NOT_FOUND_MESSAGE));
 
         tool.setStatus(ToolStatus.DADA_DE_BAJA);
 
@@ -97,7 +96,7 @@ public class ToolsService {
 
     public ToolsEntity findById(Long id) {
         return toolsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Herramienta no encontrada"));
+                .orElseThrow(() -> new RuntimeException(TOOL_NOT_FOUND_MESSAGE));
     }
 
     // Obtener una unidad disponible de un tipo de herramienta
@@ -111,10 +110,10 @@ public class ToolsService {
     @Transactional
     public void loanTool(Long toolId) {
         ToolsEntity tool = toolsRepository.findById(toolId)
-                .orElseThrow(() -> new RuntimeException("Herramienta no encontrada"));
+                .orElseThrow(() -> new RuntimeException(TOOL_NOT_FOUND_MESSAGE));
 
         if (tool.getStatus() != ToolStatus.DISPONIBLE) {
-            throw new RuntimeException("La herramienta no está disponible");
+            throw new IllegalStateException("La herramienta no está disponible");
         }
 
         tool.setStatus(ToolStatus.PRESTADA);
@@ -125,10 +124,10 @@ public class ToolsService {
     @Transactional
     public void returnTool(Long toolId) {
         ToolsEntity tool = toolsRepository.findById(toolId)
-                .orElseThrow(() -> new RuntimeException("Herramienta no encontrada"));
+                .orElseThrow(() -> new RuntimeException(TOOL_NOT_FOUND_MESSAGE));
 
         if (tool.getStatus() != ToolStatus.PRESTADA) {
-            throw new RuntimeException("La herramienta no estaba prestada");
+            throw new IllegalStateException("La herramienta no estaba prestada");
         }
 
         tool.setStatus(ToolStatus.DISPONIBLE);
@@ -161,7 +160,7 @@ public class ToolsService {
     public ToolsEntity updateTool(Long toolId, ToolsEntity toolDetails, String rut) {
         // 1. Obtener la herramienta existente
         ToolsEntity tool = toolsRepository.findById(toolId)
-                .orElseThrow(() -> new RuntimeException("Herramienta no encontrada"));
+                .orElseThrow(() -> new RuntimeException(TOOL_NOT_FOUND_MESSAGE));
 
         // Guardar el estado anterior
         ToolStatus oldStatus = tool.getStatus();

@@ -2,7 +2,7 @@ package com.ToolRent.ToolRent.Controller;
 
 import com.ToolRent.ToolRent.Entity.LoanEntity;
 import com.ToolRent.ToolRent.Service.LoanService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/loans")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class LoanController {
 
-    @Autowired
-    private LoanService loanService;
+    private final LoanService loanService;
 
     @PostMapping("/createLoan/{rut}")
     public ResponseEntity<LoanEntity> createLoan(

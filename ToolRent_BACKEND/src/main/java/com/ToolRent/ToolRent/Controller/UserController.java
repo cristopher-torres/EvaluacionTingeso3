@@ -3,7 +3,7 @@ package com.ToolRent.ToolRent.Controller;
 
 import com.ToolRent.ToolRent.Entity.UserEntity;
 import com.ToolRent.ToolRent.Service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,10 +12,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     // Crear usuario
     @PostMapping("/createUser")

@@ -4,7 +4,7 @@ package com.ToolRent.ToolRent.Controller;
 import com.ToolRent.ToolRent.DTO.ToolStockDTO;
 import com.ToolRent.ToolRent.Entity.ToolsEntity;
 import com.ToolRent.ToolRent.Service.ToolsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +13,10 @@ import java.util.List;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/tools")
+@RequiredArgsConstructor
 public class ToolsController {
 
-    @Autowired
-    private ToolsService toolsService;
+    private final ToolsService toolsService;
 
     @PostMapping("/createTool/{quantity}/{rut}")
     public ResponseEntity<ToolsEntity> createTool(

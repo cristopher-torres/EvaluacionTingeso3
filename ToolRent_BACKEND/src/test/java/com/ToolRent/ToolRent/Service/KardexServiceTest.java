@@ -168,6 +168,54 @@ public class KardexServiceTest {
         assertEquals("DEVOLUCION", result.get(2).getType());
         verify(kardexRepository, times(1)).findByDateTimeBetween(start, end);
     }
+
+    // ------------------ getAll() ------------------
+    @Test
+    void testGetAllMovementsOrdered() {
+        // Preparación de datos
+        KardexEntity m1 = new KardexEntity();
+        m1.setType("INGRESO");
+        KardexEntity m2 = new KardexEntity();
+        m2.setType("PRESTAMO");
+
+        List<KardexEntity> movements = Arrays.asList(m1, m2);
+
+        // Configuración del Mock
+        when(kardexRepository.findAllByOrderByDateTimeDesc()).thenReturn(movements);
+
+        // EJECUCIÓN: Corregido el tipo de retorno a List<KardexEntity>
+        List<KardexEntity> result = kardexService.getAll();
+
+        // VERIFICACIONES
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("INGRESO", result.get(0).getType());
+        verify(kardexRepository, times(1)).findAllByOrderByDateTimeDesc();
+    }
+
+    // ------------------ getFilteredKardex() ------------------
+    @Test
+    void testGetFilteredKardex() {
+        // Preparación de datos
+        Long toolId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(5);
+        LocalDateTime end = LocalDateTime.now();
+
+        KardexEntity m1 = new KardexEntity();
+        m1.setType("DEVOLUCION");
+
+        List<KardexEntity> expectedList = List.of(m1);
+
+        // Configuración del Mock
+        when(kardexRepository.findByToolAndDateRange(toolId, start, end)).thenReturn(expectedList);
+
+        // EJECUCIÓN
+        List<KardexEntity> result = kardexService.getFilteredKardex(toolId, start, end);
+
+        // VERIFICACIONES
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("DEVOLUCION", result.get(0).getType());
+        verify(kardexRepository, times(1)).findByToolAndDateRange(toolId, start, end);
+    }
 }
-
-

@@ -4,7 +4,7 @@ import com.ToolRent.ToolRent.Entity.KardexEntity;
 import com.ToolRent.ToolRent.Entity.ToolsEntity;
 import com.ToolRent.ToolRent.Service.KardexService;
 import com.ToolRent.ToolRent.Service.ToolsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +15,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/kardex")
 @CrossOrigin("*")
+@RequiredArgsConstructor
 public class KardexController {
-    @Autowired
-    private KardexService kardexService;
 
-    @Autowired
-    private ToolsService toolsService;
+
+    private final KardexService kardexService;
+    private final ToolsService toolsService;
 
 
     @GetMapping("/tool/{toolId}")

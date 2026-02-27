@@ -2,7 +2,7 @@ package com.ToolRent.ToolRent.Service;
 import com.ToolRent.ToolRent.Entity.KardexEntity;
 import com.ToolRent.ToolRent.Entity.ToolsEntity;
 import com.ToolRent.ToolRent.Repository.KardexRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,10 +10,10 @@ import java.util.List;
 
 
 @Service
+@RequiredArgsConstructor
 public class KardexService {
 
-    @Autowired
-    private KardexRepository kardexRepository;
+    private final KardexRepository kardexRepository;
 
     public KardexEntity save(KardexEntity movement) {
         return kardexRepository.save(movement);
