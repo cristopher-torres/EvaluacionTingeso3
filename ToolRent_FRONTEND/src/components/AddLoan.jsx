@@ -328,24 +328,19 @@ const AddLoan = () => {
                 setEndDateOpen(true);
               }}
               format="DD/MM/YYYY"
-              slots={{
-                textField: (params) => (
-                  <TextField
-                    {...params}
-                    sx={dateInputSx}
-                    fullWidth
-                    required
-                    onClick={() => setStartDateOpen(true)}
-                    onKeyDown={(e) => e.preventDefault()}
-                    inputProps={{
-                      ...params.inputProps,
-                      value: startDate ? startDate.format("DD/MM/YYYY") : "",
-                      readOnly: true
-                    }}
-                  />
-                )
+              slotProps={{
+                popper: { sx: popperSx },
+                textField: {
+                  sx: dateInputSx,
+                  fullWidth: true,
+                  required: true,
+                  onClick: () => setStartDateOpen(true),
+                  onKeyDown: (e) => e.preventDefault(),
+                  InputProps: {
+                    readOnly: true
+                  }
+                }
               }}
-              slotProps={{ popper: { sx: popperSx } }}
             />
 
             <DatePicker
@@ -363,24 +358,19 @@ const AddLoan = () => {
                 setTimeout(() => submitBtnRef.current?.focus(), 100);
               }}
               format="DD/MM/YYYY"
-              slots={{
-                textField: (params) => (
-                  <TextField
-                    {...params}
-                    sx={dateInputSx}
-                    fullWidth
-                    required
-                    onClick={() => setEndDateOpen(true)}
-                    onKeyDown={(e) => e.preventDefault()}
-                    inputProps={{
-                      ...params.inputProps,
-                      value: scheduledReturnDate ? scheduledReturnDate.format("DD/MM/YYYY") : "",
-                      readOnly: true
-                    }}
-                  />
-                )
+              slotProps={{
+                popper: { sx: popperSx },
+                textField: {
+                  sx: dateInputSx,
+                  fullWidth: true,
+                  required: true,
+                  onClick: () => setEndDateOpen(true),
+                  onKeyDown: (e) => e.preventDefault(),
+                  InputProps: {
+                    readOnly: true
+                  }
+                }
               }}
-              slotProps={{ popper: { sx: popperSx } }}
             />
           </Box>
 

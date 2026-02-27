@@ -8,7 +8,6 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Backdrop from "@mui/material/Backdrop";
@@ -140,6 +139,7 @@ const ToolListRanking = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Typography variant="overline" sx={{ color: '#38bdf8', fontWeight: 600 }}>Periodo</Typography>
+              
               <DatePicker
                 enableAccessibleFieldDOMStructure={false}
                 label="Desde"
@@ -150,9 +150,17 @@ const ToolListRanking = () => {
                 onChange={setStartDate}
                 onAccept={() => { setStartDateOpen(false); setEndDateOpen(true); }}
                 format="DD/MM/YYYY"
-                slots={{ textField: (p) => <TextField {...p} size="small" sx={inputSx} onClick={() => setStartDateOpen(true)} /> }}
-                slotProps={{ popper: { sx: popperSx } }}
+                slotProps={{ 
+                  popper: { sx: popperSx },
+                  textField: {
+                    size: "small",
+                    sx: inputSx,
+                    onClick: () => setStartDateOpen(true),
+                    InputProps: { readOnly: true }
+                  }
+                }}
               />
+              
               <DatePicker
                 enableAccessibleFieldDOMStructure={false}
                 label="Hasta"
@@ -164,9 +172,17 @@ const ToolListRanking = () => {
                 onChange={setEndDate}
                 onAccept={() => { setEndDateOpen(false); setTimeout(() => filterBtnRef.current?.focus(), 100); }}
                 format="DD/MM/YYYY"
-                slots={{ textField: (p) => <TextField {...p} size="small" sx={inputSx} onClick={() => setEndDateOpen(true)} /> }}
-                slotProps={{ popper: { sx: popperSx } }}
+                slotProps={{ 
+                  popper: { sx: popperSx },
+                  textField: {
+                    size: "small",
+                    sx: inputSx,
+                    onClick: () => setEndDateOpen(true),
+                    InputProps: { readOnly: true }
+                  }
+                }}
               />
+              
               <Button variant="contained" ref={filterBtnRef} onClick={fetchToolsByDate} startIcon={<FilterAltIcon />} sx={skyButtonStyle} disabled={!startDate || !endDate || loading}>
                 Filtrar
               </Button>
@@ -192,12 +208,17 @@ const ToolListRanking = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {tools.map((tool, index) => (
-                <TableRow key={index} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148, 163, 184, 0.07)' } }}>
-                  <TableCell sx={{ fontWeight: 600, color: '#e2e8f0 !important' }}>{tool[0]}</TableCell> 
-                  <TableCell sx={{ color: '#38bdf8 !important', fontWeight: 700 }}>{tool[1]}</TableCell> 
-                </TableRow>
-              ))}
+              {tools.map((tool, index) => {
+                // Generamos una key única usando el nombre de la herramienta y el índice como respaldo
+                const uniqueKey = tool[0] ? `tool-ranking-${tool[0].replace(/\s+/g, '-').toLowerCase()}-${index}` : `ranking-item-${index}`;
+                
+                return (
+                  <TableRow key={uniqueKey} sx={{ '&:hover': { backgroundColor: 'rgba(56, 189, 248, 0.04)' }, '& td': { color: '#cbd5e1', borderBottom: '1px solid rgba(148, 163, 184, 0.07)' } }}>
+                    <TableCell sx={{ fontWeight: 600, color: '#e2e8f0 !important' }}>{tool[0]}</TableCell> 
+                    <TableCell sx={{ color: '#38bdf8 !important', fontWeight: 700 }}>{tool[1]}</TableCell> 
+                  </TableRow>
+                );
+              })}
               {!loading && tools.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={2} align="center" sx={{ color: "#64748b", py: 8 }}>

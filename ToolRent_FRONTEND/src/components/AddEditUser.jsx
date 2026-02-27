@@ -25,7 +25,9 @@ const AddEditUser = () => {
   const [username, setUsername] = useState("");
   const [status, setStatus] = useState("ACTIVO");
 
-  const [titleUserForm, setTitleUserForm] = useState(userId ? "Editar Usuario" : "Nuevo Usuario");
+  // Corrección Sonar: Se usa constante en lugar de estado innecesario
+  const titleUserForm = userId ? "Editar Usuario" : "Nuevo Usuario";
+  
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -262,7 +264,6 @@ const AddEditUser = () => {
           Guardar Usuario
         </Button>
 
-        {/* Bloque añadido: Enlace para volver al Home */}
         <Typography variant="body2" align="center" sx={{ mt: 1 }}>
           <Link to="/" style={{ color: "#94a3b8", textDecoration: "none", fontWeight: 600 }}>
             ← Volver al Home

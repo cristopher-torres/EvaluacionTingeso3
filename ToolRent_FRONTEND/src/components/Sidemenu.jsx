@@ -1,4 +1,5 @@
 import * as React from "react";
+import PropTypes from "prop-types"; 
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -152,3 +153,7 @@ export default function Sidemenu({ open, toggleDrawer }) {
   );
 }
 
+Sidemenu.propTypes = {
+  open: PropTypes.bool.isRequired,
+  toggleDrawer: PropTypes.func.isRequired,
+};

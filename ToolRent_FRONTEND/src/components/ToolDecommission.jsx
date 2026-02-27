@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import toolService from "../services/tool.service";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -22,14 +21,13 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Tooltip from "@mui/material/Tooltip";
-import Chip from "@mui/material/Chip"; // Importado para los estados
+import Chip from "@mui/material/Chip"; 
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { useKeycloak } from "@react-keycloak/web";
 import PageHelp from "../components/PageHelp";
 
 const ToolDecommission = () => {
   const { keycloak } = useKeycloak();
-  const navigate = useNavigate();
   const [tools, setTools] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);

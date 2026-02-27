@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types"; // 1. Importamos PropTypes
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Popover from "@mui/material/Popover";
@@ -66,13 +67,26 @@ const PageHelp = ({ title, steps }) => {
             lineHeight: 1.6
           }}
         >
-          {steps.map((step, index) => (
-            <li key={index} style={{ marginBottom: '8px' }}>{step}</li>
-          ))}
+          {steps.map((step, index) => {
+            const itemKey = typeof step === 'string' 
+              ? `step-${step.substring(0, 10).replace(/\s+/g, '')}-${index}` 
+              : `step-node-${index}`;
+
+            return (
+              <li key={itemKey} style={{ marginBottom: '8px' }}>
+                {step}
+              </li>
+            );
+          })}
         </Box>
       </Popover>
     </>
   );
+};
+
+PageHelp.propTypes = {
+  title: PropTypes.string.isRequired,
+  steps: PropTypes.array.isRequired,
 };
 
 export default PageHelp;

@@ -250,12 +250,15 @@ const KardexList = () => {
                         }}
                         onAccept={() => { setStartDateOpen(false); setEndDateOpen(true); }}
                         format="DD/MM/YYYY"
-                        slots={{
-                            textField: (params) => (
-                                <TextField {...params} size="small" sx={dateInputSx} onClick={() => setStartDateOpen(true)} inputProps={{ ...params.inputProps, value: startDate ? startDate.format("DD/MM/YYYY") : "", readOnly: true }} />
-                            )
+                        slotProps={{ 
+                            popper: { sx: popperSx },
+                            textField: {
+                                size: "small",
+                                sx: dateInputSx,
+                                onClick: () => setStartDateOpen(true),
+                                InputProps: { readOnly: true }
+                            }
                         }}
-                        slotProps={{ popper: { sx: popperSx } }}
                     />
 
                     <DatePicker
@@ -269,12 +272,15 @@ const KardexList = () => {
                         onChange={setEndDate}
                         onAccept={() => { setEndDateOpen(false); setTimeout(() => dateBtnRef.current?.focus(), 100); }}
                         format="DD/MM/YYYY"
-                        slots={{
-                            textField: (params) => (
-                                <TextField {...params} size="small" sx={dateInputSx} onClick={() => setEndDateOpen(true)} inputProps={{ ...params.inputProps, value: endDate ? endDate.format("DD/MM/YYYY") : "", readOnly: true }} />
-                            )
+                        slotProps={{ 
+                            popper: { sx: popperSx },
+                            textField: {
+                                size: "small",
+                                sx: dateInputSx,
+                                onClick: () => setEndDateOpen(true),
+                                InputProps: { readOnly: true }
+                            }
                         }}
-                        slotProps={{ popper: { sx: popperSx } }}
                     />
 
                     <Button variant="contained" ref={dateBtnRef} onClick={handleApplyFilters} sx={skyButtonStyle}>
@@ -350,7 +356,8 @@ const KardexList = () => {
                             ))}
                             {!loading && movements.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={5} align="center" sx={{ color: "#64748b", py: 8 }}>
+                                    {/* Aquí corregí el colSpan a 6 */}
+                                    <TableCell colSpan={6} align="center" sx={{ color: "#64748b", py: 8 }}>
                                         No se encontraron registros de movimientos.
                                     </TableCell>
                                 </TableRow>

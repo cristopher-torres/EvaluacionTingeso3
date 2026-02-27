@@ -170,8 +170,15 @@ const ReportLateClient = () => {
                   setEndDateOpen(true);
                 }}
                 format="DD/MM/YYYY"
-                slots={{ textField: (p) => <TextField {...p} size="small" sx={inputSx} onClick={() => setStartDateOpen(true)} /> }}
-                slotProps={{ popper: { sx: popperSx } }}
+                slotProps={{ 
+                  popper: { sx: popperSx },
+                  textField: {
+                    size: "small",
+                    sx: inputSx,
+                    onClick: () => setStartDateOpen(true),
+                    InputProps: { readOnly: true }
+                  }
+                }}
               />
               <DatePicker
                 enableAccessibleFieldDOMStructure={false}
@@ -187,8 +194,15 @@ const ReportLateClient = () => {
                   setTimeout(() => filterBtnRef.current?.focus(), 100);
                 }}
                 format="DD/MM/YYYY"
-                slots={{ textField: (p) => <TextField {...p} size="small" sx={inputSx} onClick={() => setEndDateOpen(true)} /> }}
-                slotProps={{ popper: { sx: popperSx } }}
+                slotProps={{ 
+                  popper: { sx: popperSx },
+                  textField: {
+                    size: "small",
+                    sx: inputSx,
+                    onClick: () => setEndDateOpen(true),
+                    InputProps: { readOnly: true }
+                  }
+                }}
               />
               <Button variant="contained" ref={filterBtnRef} onClick={fetchLateLoansByDate} startIcon={<FilterAltIcon />} sx={skyButtonStyle} disabled={!startDate || !endDate || loading}>
                 Filtrar

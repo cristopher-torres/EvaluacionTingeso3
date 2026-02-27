@@ -17,7 +17,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Tooltip from "@mui/material/Tooltip";
 import Chip from "@mui/material/Chip";
 import EditIcon from "@mui/icons-material/Edit";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import PageHelp from "../components/PageHelp";
 
 const UserList = () => {
@@ -49,9 +48,9 @@ const UserList = () => {
   };
 
   useEffect(() => {
-    const cleanFilter = rutFilter.replace(/[^0-9kK]/gi, "").toLowerCase();
+    const cleanFilter = rutFilter.replace(/[^0-9k]/gi, "").toLowerCase();
     const filtered = users.filter(user => {
-      const cleanRut = (user.rut || "").replace(/[^0-9kK]/gi, "").toLowerCase();
+      const cleanRut = (user.rut || "").replace(/[^0-9k]/gi, "").toLowerCase();
       return cleanRut.includes(cleanFilter);
     });
     setFilteredUsers(filtered);

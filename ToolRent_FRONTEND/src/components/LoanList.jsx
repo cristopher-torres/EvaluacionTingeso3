@@ -50,9 +50,11 @@ const LoanList = () => {
   };
 
   useEffect(() => {
-    const cleanFilter = rutFilter.replace(/[^0-9kK]/gi, "").toLowerCase();
+    // CORRECCIÓN: Se cambió [^0-9kK] por [^0-9k] ya que usamos la bandera 'i'
+    const cleanFilter = rutFilter.replace(/[^0-9k]/gi, "").toLowerCase();
     const filtered = loans.filter(loan => {
-      const cleanRut = (loan.client?.rut || "").replace(/[^0-9kK]/gi, "").toLowerCase();
+      // CORRECCIÓN: Igual aquí, se quitó la 'K' duplicada
+      const cleanRut = (loan.client?.rut || "").replace(/[^0-9k]/gi, "").toLowerCase();
       return cleanRut.includes(cleanFilter);
     });
     setFilteredLoans(filtered);
