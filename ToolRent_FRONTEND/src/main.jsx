@@ -1,41 +1,40 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import { ReactKeycloakProvider } from "@react-keycloak/web";
-import keycloak from "./services/keycloak";
-
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import App from './App';
+import './index.css';
+import keycloak from './services/keycloak';
 
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#38bdf8',       // sky-400: celeste suave
-      dark: '#0284c7',       // sky-600: hover de botones
-      light: '#7dd3fc',      // sky-300: texto de enlaces y etiquetas
+      main: '#38bdf8',
+      dark: '#0284c7',
+      light: '#7dd3fc',
     },
     secondary: {
-      main: '#818cf8',       // indigo-400:
+      main: '#818cf8',
       dark: '#6366f1',
     },
     background: {
-      default: '#0f172a',    // slate-900: azul marino profundo
-      paper: '#1e293b',      // slate-800: superficies elevadas (tablas, tarjetas, menú)
+      default: '#0f172a',
+      paper: '#1e293b',
     },
     text: {
-      primary: '#e2e8f0',    // slate-200: blanco 
-      secondary: '#94a3b8',  // slate-400: texto de apoyo y subtítulos
-      disabled: '#475569',   // slate-600
+      primary: '#e2e8f0',
+      secondary: '#94a3b8',
+      disabled: '#475569',
     },
-    divider: 'rgba(148, 163, 184, 0.12)', // slate con baja opacidad
+    divider: 'rgba(148, 163, 184, 0.12)',
     action: {
       hover: 'rgba(56, 189, 248, 0.06)',
       selected: 'rgba(56, 189, 248, 0.10)',
     },
   },
   typography: {
-    fontFamily: '"IBM Plex Sans", "Segoe UI", sans-serif',
+    fontFamily: "'IBM Plex Sans', 'Segoe UI', sans-serif",
     h3: {
       fontWeight: 700,
       letterSpacing: '-0.02em',
@@ -85,7 +84,7 @@ const darkTheme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundImage: 'none', 
+          backgroundImage: 'none',
         },
       },
     },
@@ -98,5 +97,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <CssBaseline />
       <App />
     </ThemeProvider>
-  </ReactKeycloakProvider>
-)
+  </ReactKeycloakProvider>,
+);

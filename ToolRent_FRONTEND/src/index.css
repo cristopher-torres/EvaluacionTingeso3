@@ -35,8 +35,6 @@ body {
   padding: 0;
   min-width: 320px;
   min-height: 100vh;
-  /* IMPORTANTE: se elimina display:flex y place-items:center del default
-     de Vite porque centraba verticalmente todo el contenido de la app */
   background-color: var(--color-bg);
   color: var(--color-text);
 }
