@@ -24,12 +24,12 @@ import { getUnpaidLoans, updateFinePaid } from '../services/loan.service';
 import PageHelp from '../components/PageHelp';
 
 const formatRut = (value) => {
-  let cleanValue = value.replace(/[^0-9kK]/g, '');
+  let cleanValue = value.replaceAll(/[^0-9kK]/g, '');
   if (cleanValue.length > 9) cleanValue = cleanValue.slice(0, 9);
   if (cleanValue.length <= 1) return cleanValue;
   let body = cleanValue.slice(0, -1);
   const dv = cleanValue.slice(-1).toUpperCase();
-  body = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  body = body.replaceAll(/\B(?=(\d{3})+(?!\d))/g, '.');
   return `${body}-${dv}`;
 };
 
@@ -87,7 +87,7 @@ const UnpaidLoansPage = () => {
 
   const fetchUnpaidLoans = () => {
     setLoading(true);
-    setLoadingMessage('Sincronizando multas...');
+    setLoadingMessage('Obteniendo multas...');
     getUnpaidLoans()
       .then((res) => {
         setLoans(res.data);
@@ -99,7 +99,6 @@ const UnpaidLoansPage = () => {
 
   useEffect(() => {
     fetchUnpaidLoans();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -251,12 +250,14 @@ const UnpaidLoansPage = () => {
       <Dialog
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}
-        PaperProps={{
-          sx: {
-            bgcolor: '#1e293b',
-            border: '1px solid rgba(148, 163, 184, 0.2)',
-            color: '#e2e8f0',
-          },
+        slotProps={{
+          paper: {
+            sx: {
+              bgcolor: '#1e293b',
+              border: '1px solid rgba(148, 163, 184, 0.2)',
+              color: '#e2e8f0',
+            },
+          }
         }}
       >
         <DialogTitle sx={{ color: '#38bdf8', fontWeight: 700 }}>

@@ -22,12 +22,12 @@ import PageHelp from '../components/PageHelp';
 const domains = ['@gmail.com', '@outlook.com', '@hotmail.com', '@yahoo.com'];
 
 const formatRut = (value) => {
-  let cleanValue = value.replace(/[^0-9kK]/g, '');
+  let cleanValue = value.replaceAll(/[^0-9kK]/g, '');
   if (cleanValue.length > 9) cleanValue = cleanValue.slice(0, 9);
   if (cleanValue.length <= 1) return cleanValue;
   let body = cleanValue.slice(0, -1);
   const dv = cleanValue.slice(-1).toUpperCase();
-  body = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  body = body.replaceAll(/\B(?=(\d{3})+(?!\d))/g, '.');
   return `${body}-${dv}`;
 };
 
@@ -80,6 +80,7 @@ const AddEditUser = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
 
+  const rutRef = useRef(null);
   const nameRef = useRef(null);
   const lastNameRef = useRef(null);
   const emailRef = useRef(null);
@@ -100,7 +101,7 @@ const AddEditUser = () => {
           const [local, domain] = user.email.split('@');
           setEmailLocal(local);
           setEmailDomain(`@${domain}`);
-          setPhoneNumber(user.phoneNumber.replace('+569', ''));
+          setPhoneNumber(user.phoneNumber.replaceAll('+569', ''));
           setUsername(user.username);
           setStatus(user.status);
         })
@@ -111,7 +112,7 @@ const AddEditUser = () => {
 
   const saveUser = (e) => {
     e.preventDefault();
-    const rawRut = rut.replace(/[^0-9kK]/g, '');
+    const rawRut = rut.replaceAll(/[^0-9kK]/g, '');
     if (rawRut.length < 8) {
       setErrorMessage('El RUT debe tener al menos 8 caracteres.');
       setOpenErrorSnackbar(true);
@@ -216,24 +217,28 @@ const AddEditUser = () => {
 
         <TextField
           label="RUT"
+          inputRef={rutRef}
           value={rut}
           onChange={(e) => setRut(formatRut(e.target.value))}
           onKeyDown={(e) => handleKeyDown(e, nameRef)}
           required
           sx={inputSx}
           placeholder="12.345.678-9"
+          autoFocus
           error={
-            rut.replace(/[^0-9kK]/g, '').length > 0 &&
-            rut.replace(/[^0-9kK]/g, '').length < 8
+            rut.replaceAll(/[^0-9kK]/g, '').length > 0 &&
+            rut.replaceAll(/[^0-9kK]/g, '').length < 8
           }
-          InputProps={{
-            endAdornment:
-              rut.replace(/[^0-9kK]/g, '').length > 0 &&
-              rut.replace(/[^0-9kK]/g, '').length < 8 ? (
-                <Tooltip title="Mínimo 8 dígitos" arrow placement="top">
-                  <HelpOutlineIcon sx={{ color: '#f87171', fontSize: '1.2rem', cursor: 'help' }} />
-                </Tooltip>
-              ) : null,
+          slotProps={{
+            input: {
+              endAdornment:
+                rut.replaceAll(/[^0-9kK]/g, '').length > 0 &&
+                rut.replaceAll(/[^0-9kK]/g, '').length < 8 ? (
+                  <Tooltip title="Mínimo 8 dígitos" arrow placement="top">
+                    <HelpOutlineIcon sx={{ color: '#f87171', fontSize: '1.2rem', cursor: 'help' }} />
+                  </Tooltip>
+                ) : null,
+            }
           }}
         />
 
@@ -283,10 +288,10 @@ const AddEditUser = () => {
               '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(56, 189, 248, 0.4)' },
               '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#38bdf8' },
             }}
-            MenuProps={{
-              PaperProps: {
+            slotProps={{
+              paper: {
                 sx: { bgcolor: '#1e293b', color: '#e2e8f0', border: '1px solid rgba(148, 163, 184, 0.2)' },
-              },
+              }
             }}
           >
             {domains.map((d) => (
@@ -306,38 +311,40 @@ const AddEditUser = () => {
           inputRef={phoneRef}
           value={phoneNumber}
           onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, '');
+            const val = e.target.value.replaceAll(/\D/g, '');
             if (val.length <= 8) setPhoneNumber(val);
           }}
           onKeyDown={(e) => handleKeyDown(e, userRef)}
           required
           sx={inputSx}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    bgcolor: 'rgba(56, 189, 248, 0.05)',
-                    p: 0.6,
-                    borderRadius: 1,
-                    border: '1px solid rgba(56, 189, 248, 0.2)',
-                  }}
-                >
-                  <span style={{ fontSize: '1.1rem' }}>🇨🇱</span>
-                  <Typography sx={{ color: '#38bdf8', fontWeight: 600, fontSize: '0.85rem' }}>
-                    +56 9
-                  </Typography>
-                </Box>
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <Tooltip title="Ingrese los 8 dígitos del número celular" arrow placement="top">
-                <HelpOutlineIcon sx={{ color: '#94a3b8', fontSize: '1.1rem', cursor: 'help', mr: 1 }} />
-              </Tooltip>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      bgcolor: 'rgba(56, 189, 248, 0.05)',
+                      p: 0.6,
+                      borderRadius: 1,
+                      border: '1px solid rgba(56, 189, 248, 0.2)',
+                    }}
+                  >
+                    <span style={{ fontSize: '1.1rem' }}>🇨🇱</span>
+                    <Typography sx={{ color: '#38bdf8', fontWeight: 600, fontSize: '0.85rem' }}>
+                      +56 9
+                    </Typography>
+                  </Box>
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <Tooltip title="Ingrese los 8 dígitos del número celular" arrow placement="top">
+                  <HelpOutlineIcon sx={{ color: '#94a3b8', fontSize: '1.1rem', cursor: 'help', mr: 1 }} />
+                </Tooltip>
+              ),
+            }
           }}
         />
 

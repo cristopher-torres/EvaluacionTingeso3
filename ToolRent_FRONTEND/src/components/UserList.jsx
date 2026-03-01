@@ -74,6 +74,7 @@ const UserList = () => {
 
   useEffect(() => {
     setLoading(true);
+    setLoadingMessage('Cargando Usuarios...');
     getAllClients()
       .then((res) => {
         setUsers(res.data);

@@ -60,6 +60,7 @@ const LoanList = () => {
 
   useEffect(() => {
     setLoading(true);
+    setLoadingMessage('Cargando todos los prestamos...');
     getLoans()
       .then((res) => {
         setLoans(res.data);

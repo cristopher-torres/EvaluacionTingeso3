@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -116,5 +117,13 @@ public class UserService {
     user.setRole(userDetails.getRole());
 
     return userRepository.save(user);
+  }
+
+  public boolean hasUnpaidFinesOrDebts(Long userId) {
+    return userRepository.countUnpaidLoansByUserId(userId) > 0;
+  }
+
+  public boolean hasOverdueLoans(Long userId) {
+    return userRepository.countOverdueLoansByUserId(userId, LocalDate.now()) > 0;
   }
 }

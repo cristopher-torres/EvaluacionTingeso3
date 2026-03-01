@@ -90,7 +90,19 @@ public class LoanService {
     UserEntity user = userService.findById(userId);
     String status = user.getStatus();
     if (!"Activo".equalsIgnoreCase(status)) {
-      throw new IllegalStateException("El cliente no esta disponible para realizar un prestamo");
+      // 1. Verificar si la restricción es por multas/deudas impagas
+      if (userService.hasUnpaidFinesOrDebts(userId)) {
+        throw new IllegalStateException(
+            "El cliente registra multas sin pagar.");
+      }
+
+      // 2. Verificar si la restricción es por préstamos atrasados
+      if (userService.hasOverdueLoans(userId)) {
+        throw new IllegalStateException(
+            "El cliente tiene préstamos vencidos que no han sido devueltos.");
+      }
+
+      throw new IllegalStateException("El cliente no está habilitado para realizar un préstamo.");
     }
   }
 

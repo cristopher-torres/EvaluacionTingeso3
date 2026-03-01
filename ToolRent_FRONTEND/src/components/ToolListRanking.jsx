@@ -196,7 +196,7 @@ const ToolListRanking = () => {
                     size: 'small',
                     sx: inputSx,
                     onClick: () => setStartDateOpen(true),
-                    InputProps: { readOnly: true },
+                    slotProps: { input: { readOnly: true } },
                   },
                 }}
               />
@@ -221,7 +221,8 @@ const ToolListRanking = () => {
                     size: 'small',
                     sx: inputSx,
                     onClick: () => setEndDateOpen(true),
-                    InputProps: { readOnly: true },
+                    // FIX: Uso de slotProps.input para MUI v6
+                    slotProps: { input: { readOnly: true } },
                   },
                 }}
               />
@@ -293,7 +294,7 @@ const ToolListRanking = () => {
             <TableBody>
               {tools.map((tool, index) => {
                 const uniqueKey = tool[0]
-                  ? `tool-ranking-${tool[0].replace(/\s+/g, '-').toLowerCase()}-${index}`
+                  ? `tool-ranking-${tool[0].replaceAll(/\s+/g, '-').toLowerCase()}-${index}`
                   : `ranking-item-${index}`;
 
                 return (

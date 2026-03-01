@@ -155,7 +155,7 @@ const AddLoan = () => {
     Promise.all([toolService.getAvailable(), userService.getAllClients()])
       .then(([toolsRes, usersRes]) => {
         setTools(toolsRes.data);
-        setClients(usersRes.data.filter((u) => u.status.toUpperCase() === 'ACTIVO'));
+        setClients(usersRes.data);
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -259,7 +259,7 @@ const AddLoan = () => {
                 'Seleccione una herramienta del catálogo.',
                 'Busque al cliente por su nombre de usuario o RUT. (Escribir RUT Con puntos y guión).',
                 <span key="ayuda-usuarios">
-                  Si un usuario no aparece en la búsqueda, es porque está restringido o no se ha
+                  Si un usuario no se le puede realizar un préstamo, es porque está restringido o no se ha
                   registrado en el sistema, revisar en la{' '}
                   <Link
                     to="/users/list"
@@ -339,7 +339,7 @@ const AddLoan = () => {
                   endAdornment: (
                     <>
                       <Tooltip
-                        title="Puede buscar tanto por nombre de usuario como por RUT. Solo clientes no restringidos."
+                        title="Puede buscar tanto por nombre de usuario como por RUT."
                         arrow
                         placement="top"
                       >

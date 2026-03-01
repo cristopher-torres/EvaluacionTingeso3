@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -44,6 +44,16 @@ const skyButtonStyle = {
 };
 
 const AddEditTool = () => {
+  const nameRef = useRef(null);
+  const categoryRef = useRef(null);
+  const quantityRef = useRef(null);
+  const replacementRef = useRef(null);
+  const dailyRateRef = useRef(null);
+  const dailyLateRef = useRef(null);
+  const repairRef = useRef(null);
+  const statusRef = useRef(null);
+  const submitRef = useRef(null);
+
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [quantity, setQuantity] = useState('');
@@ -57,9 +67,15 @@ const AddEditTool = () => {
   const [titleToolForm, setTitleToolForm] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
-
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const { keycloak } = useKeycloak();
+
+  const handleKeyDown = (e, nextRef) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      nextRef?.current?.focus();
+    }
+  };
 
   const saveTool = (e) => {
     e.preventDefault();
@@ -160,19 +176,35 @@ const AddEditTool = () => {
 
         <TextField
           label="Nombre de Herramienta"
+          inputRef={nameRef}
+          onKeyDown={(e) => handleKeyDown(e, categoryRef)}
           value={name}
           variant="outlined"
           onChange={(e) => setName(e.target.value)}
           required
           sx={inputSx}
           fullWidth
+          autoFocus
         />
+
         <TextField
           label="Categoría"
+          inputRef={categoryRef}
+          onKeyDown={(e) => handleKeyDown(e, id ? replacementRef : quantityRef)}
           value={category}
           select
           variant="outlined"
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            // Salto de foco al seleccionar categoría
+            setTimeout(() => {
+              if (id) {
+                replacementRef.current?.focus();
+              } else {
+                quantityRef.current?.focus();
+              }
+            }, 100);
+          }}
           required
           sx={inputSx}
           fullWidth
@@ -198,10 +230,11 @@ const AddEditTool = () => {
           <MenuItem value="Jardinería">Jardinería</MenuItem>
         </TextField>
 
-        {/* FIX: InputProps movido a slotProps.input */}
         {!id && (
           <TextField
             label="Cantidad inicial"
+            inputRef={quantityRef}
+            onKeyDown={(e) => handleKeyDown(e, replacementRef)}
             type="number"
             value={quantity}
             variant="outlined"
@@ -225,6 +258,8 @@ const AddEditTool = () => {
           <TextField
             fullWidth
             label="Valor Reposición"
+            inputRef={replacementRef}
+            onKeyDown={(e) => handleKeyDown(e, dailyRateRef)}
             type="number"
             value={replacementValue}
             onChange={(e) => setReplacementValue(e.target.value)}
@@ -243,6 +278,8 @@ const AddEditTool = () => {
           <TextField
             fullWidth
             label="Tarifa Diaria"
+            inputRef={dailyRateRef}
+            onKeyDown={(e) => handleKeyDown(e, dailyLateRef)}
             type="number"
             value={dailyRate}
             onChange={(e) => setDailyRate(e.target.value)}
@@ -263,6 +300,8 @@ const AddEditTool = () => {
           <TextField
             fullWidth
             label="Tarifa Atraso"
+            inputRef={dailyLateRef}
+            onKeyDown={(e) => handleKeyDown(e, repairRef)}
             type="number"
             value={dailyLateRate}
             onChange={(e) => setDailyLateRate(e.target.value)}
@@ -280,6 +319,8 @@ const AddEditTool = () => {
           <TextField
             fullWidth
             label="Costo Reparación"
+            inputRef={repairRef}
+            onKeyDown={(e) => handleKeyDown(e, id ? statusRef : submitRef)}
             type="number"
             value={repairValue}
             onChange={(e) => setRepairValue(e.target.value)}
@@ -299,10 +340,16 @@ const AddEditTool = () => {
         {id && (
           <TextField
             label="Estado"
+            inputRef={statusRef}
+            onKeyDown={(e) => handleKeyDown(e, submitRef)}
             value={status}
             select
             variant="outlined"
-            onChange={(e) => setStatus(e.target.value)}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              // Salto de foco al botón Submit
+              setTimeout(() => submitRef.current?.focus(), 100);
+            }}
             required
             sx={inputSx}
             fullWidth
@@ -329,6 +376,7 @@ const AddEditTool = () => {
 
         <Button
           type="submit"
+          ref={submitRef}
           variant="contained"
           sx={skyButtonStyle}
           startIcon={<SaveIcon />}
